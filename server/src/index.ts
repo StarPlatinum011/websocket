@@ -6,16 +6,35 @@ const wss = new WebSocketServer({
 
 //handle web socket connection
 wss.on('connection', (ws)=> {
-    console.log('client connected');
+    console.log('new client connected');
     
-    ws.send('this is a connection message ')
-
     //handle incoming messages 
     ws.on('message', (msg) =>{
-        //deserialization of data
-        // let data = JSON.parse(msg)
-        console.log(`received: ${msg}`);
-        ws.send('yaro domo! message wa kitta.')
+        
+         let data;
+        try {
+            //parse the string into object so it can be easily accessed in chatData below
+             data  = JSON.parse(msg.toString());
+        } catch (error) {
+            console.log('invalid JSON received ', msg);
+            
+        }
+
+        const timestamp = new Date().toLocaleTimeString();
+
+        const chatData = JSON.stringify({
+            username: data.username || 'annon',
+            message: data.message,
+            timestamp
+        });
+
+        wss.clients.forEach((client)=> {
+            if(client.readyState === ws.OPEN) {
+                ws.send(chatData)
+                console.log(`received: ${chatData}`);
+
+            }
+        })
 
     });
 
