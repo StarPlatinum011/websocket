@@ -12,8 +12,12 @@ const WebSocketClient = () => {
 
         //handle incoming messages
         socket.onmessage= async (event) => {
-           
-                setDisplayMessages((prev) => [...prev, JSON.parse(event.data)])
+           try {
+            const receivedMsg = JSON.parse(event.data);
+            setDisplayMessages((prev) => [...prev, receivedMsg])
+           } catch (error) {
+            console.error("Error parsing received message: ", error)
+           }
         }
 
         socket.onopen= () => console.log('connected to websocket');
@@ -30,8 +34,13 @@ const WebSocketClient = () => {
 
     const sendMessages = () => {
         if(ws && msgInput.trim() && username.trim()) {
+            const message = {
+                username,
+                message: msgInput,
+                timestamp: new Date().toLocaleTimeString()
+            }
 
-            ws.send(JSON.stringify({username, message: msgInput}));
+            ws.send(JSON.stringify(message));
             setMsgInput('');
         }
     }

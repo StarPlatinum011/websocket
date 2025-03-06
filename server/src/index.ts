@@ -1,4 +1,4 @@
-import  {WebSocketServer} from 'ws'; 
+import  {WebSocket, WebSocketServer} from 'ws'; 
 
 const wss = new WebSocketServer({
     port: 8080
@@ -29,8 +29,8 @@ wss.on('connection', (ws)=> {
         });
 
         wss.clients.forEach((client)=> {
-            if(client.readyState === ws.OPEN) {
-                ws.send(chatData)
+            if(client.readyState === WebSocket.OPEN) {
+                client.send(chatData)
                 console.log(`received: ${chatData}`);
 
             }
