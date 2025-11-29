@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { MessageSquareMore } from "lucide-react";
 
 // Define the structure for a message
 interface Message {
@@ -11,21 +12,16 @@ const WebSocketClient = () => {
     const [displayMessages, setDisplayMessages] = useState<Message[]>([]);
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [msgInput, setMsgInput] = useState('');
-    // Use an empty string for the initial username
     const [username, setUsername] = useState('');
-    // Check if a username is set to control the UI state
     const [isUsernameSet, setIsUsernameSet] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // --- Effects ---
-
-    // Auto-scroll to the bottom when new messages arrive
+    // --- Effects and Functions (Unchanged) ---
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [displayMessages]);
 
-    // WebSocket Connection and Handling
     useEffect(() => {
         const socket = new WebSocket('ws://localhost:8080');
         setWs(socket);
@@ -47,8 +43,6 @@ const WebSocketClient = () => {
             socket.close();
         }
     }, []);
-
-    // --- Functions ---
     
     const sendMessages = () => {
         if (ws && ws.readyState === WebSocket.OPEN && msgInput.trim() && username.trim()) {
@@ -76,42 +70,40 @@ const WebSocketClient = () => {
     }
 
     const handleLogout = () => {
-        // Clear all session-related state
         setUsername('');
         setIsUsernameSet(false);
-        setDisplayMessages([]); // Optionally clear messages on logout
-        // Note: The WebSocket connection itself will remain open until component unmounts
-        // or a new logic to close and re-open is implemented. For this example, we just reset the UI state.
+        setDisplayMessages([]);
         console.log("User logged out and session cleared.");
     }
 
     // --- UI Rendering ---
     return (
-        // Removed the unnecessary 'ml-80' margin and centered the container
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
             <div className="w-full max-w-lg bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col h-[80vh]">
                 
-                {/* Header */}
+                {/* Header: FIX APPLIED HERE */}
                 <header className="bg-blue-600 p-4 shadow-md flex justify-between items-center">
-                    <h1 className="text-xl font-bold text-white">
-                        Live Chat App 💬
+                    <h1 className="flex items-center text-xl font-bold text-white space-x-2">
+                        Live Chat App <MessageSquareMore className="w-5 h-5"/>
                     </h1>
                     {isUsernameSet ? (
-                         <div className="flex items-center space-x-3">
-                             <span className="text-sm text-blue-200">
-                                 Logged in as: **{username}**
-                             </span>
-                             <button
+                        // *** FIX: Removed flex-col and space-x-3 / gap-2 is now correct for a row ***
+                        <div className="flex items-center space-x-3"> 
+                            <span className="text-sm text-blue-200">
+                                Logged in as: <span className="font-semibold">{username}</span>
+                            </span>
+                            <button
                                 onClick={handleLogout}
-                                className="bg-red-500 hover:bg-red-600 text-white text-xs font-semibold py-1 px-3 rounded-lg transition duration-200"
+                                // ** Tailwind classes are now correctly applied on this button. **
+                                className="bg-red-500 cursor-pointer hover:bg-red-600 text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition duration-200 whitespace-nowrap"
                             >
                                 Logout
                             </button>
-                         </div>
+                        </div>
                     ) : (
-                        <span className="text-sm text-blue-200">
-                             Please log in
-                         </span>
+                        <span className="text-sm text-blue-200 ">
+                            Please Login to start
+                        </span>
                     )}
                 </header>
 
@@ -125,21 +117,19 @@ const WebSocketClient = () => {
                                 placeholder="Enter your username..."
                                 onChange={(e) => setUsername(e.target.value)}
                                 value={username}
-                                // Updated class: text-gray-900 to ensure visibility
                                 className="w-full p-3 mb-4 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" 
                             />
                             <button
                                 onClick={handleUsernameSet}
                                 disabled={!username.trim()}
-                                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 disabled:opacity-50"
+                                className="w-full bg-blue-500 cursor-pointer hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 disabled:bg-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Start Chatting
+                                Login
                             </button>
                         </div>
                     ) : (
                         displayMessages.map((msg, index) => {
                             const isOwnMessage = msg.username === username;
-
                             return (
                                 <div 
                                     key={index}
@@ -168,7 +158,7 @@ const WebSocketClient = () => {
                 </div>
 
                 {/* Message Input Area */}
-                <footer className="p-4 border-t bg-gray-50">
+                {isUsernameSet && <footer className="p-4 border-t bg-gray-50">
                     <div className="flex space-x-3">
                         <input
                             type="text"
@@ -177,18 +167,17 @@ const WebSocketClient = () => {
                             onChange={(e) => setMsgInput(e.target.value)}
                             onKeyPress={handleKeypress}
                             disabled={!isUsernameSet || !ws || ws.readyState !== WebSocket.OPEN}
-                            // Added text-gray-900 to ensure visibility
                             className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 text-gray-900" 
                         />
                         <button
                             onClick={sendMessages}
                             disabled={!isUsernameSet || !msgInput.trim()}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 disabled:opacity-50"
+                            className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-bold py-3 px-6 rounded-lg transition duration-200 disabled:opacity-50"
                         >
                             Send
                         </button>
                     </div>
-                </footer>
+                </footer>}
             </div>
         </div>
     );
