@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { MessageSquareMore } from "lucide-react";
 
-// Define the structure for a message
 interface Message {
     username: string;
     message: string;
     timestamp: string;
+    type?: string;
 }
 
 const WebSocketClient = () => {
@@ -17,30 +17,43 @@ const WebSocketClient = () => {
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // --- Effects and Functions (Unchanged) ---
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [displayMessages]);
 
+    //ws connection
     useEffect(() => {
-        const socket = new WebSocket('ws://localhost:8080');
-        setWs(socket);
+        let socket: WebSocket | null = null;
+        let reconnectTimeout: NodeJS.Timeout | null = null;
 
-        socket.onmessage = async (event) => {
-            try {
-                const receivedMsg = JSON.parse(event.data) as Message;
+        const connect = () => {
+           
+            socket = new WebSocket('ws://localhost:8080');
+            console.log('socket is set');
+            
+            
+            socket.onopen = () => console.log('Connected to WebSocket');
+            socket.onmessage = async (event) => {
+                const receivedMsg = JSON.parse(event.data);
                 setDisplayMessages((prev) => [...prev, receivedMsg]);
-            } catch (error) {
-                console.error("Error parsing received message: ", error);
+                console.log('this is a message from be ', receivedMsg);  
             }
+
+            socket.onerror = (err) => console.error('WebSocket error', err);
+            socket.onclose = () => {
+                console.log('WebSocket disconnected, Reconnecting ... ');
+                // attempt to reconnect after 3 seconds
+                reconnectTimeout = setTimeout(connect, 3000);
+            }
+
+            setWs(socket);
         }
 
-        socket.onopen = () => console.log('Connected to WebSocket');
-        socket.onclose = () => console.log('WebSocket disconnected');
-        socket.onerror = (err) => console.error('WebSocket error', err);
+        connect();
 
         return () => {
-            socket.close();
+            if (socket) socket.close();
+            if (reconnectTimeout) clearTimeout(reconnectTimeout);
         }
     }, []);
     
@@ -49,7 +62,8 @@ const WebSocketClient = () => {
             const messageToSend: Message = {
                 username,
                 message: msgInput,
-                timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                timestamp: new Date().toISOString(),
+                type: 'heartbeat'
             }
 
             ws.send(JSON.stringify(messageToSend));
@@ -81,20 +95,17 @@ const WebSocketClient = () => {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
             <div className="w-full max-w-lg bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col h-[80vh]">
                 
-                {/* Header: FIX APPLIED HERE */}
                 <header className="bg-blue-600 p-4 shadow-md flex justify-between items-center">
                     <h1 className="flex items-center text-xl font-bold text-white space-x-2">
                         Live Chat App <MessageSquareMore className="w-5 h-5"/>
                     </h1>
                     {isUsernameSet ? (
-                        // *** FIX: Removed flex-col and space-x-3 / gap-2 is now correct for a row ***
                         <div className="flex items-center space-x-3"> 
                             <span className="text-sm text-blue-200">
                                 Logged in as: <span className="font-semibold">{username}</span>
                             </span>
                             <button
                                 onClick={handleLogout}
-                                // ** Tailwind classes are now correctly applied on this button. **
                                 className="bg-red-500 cursor-pointer hover:bg-red-600 text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition duration-200 whitespace-nowrap"
                             >
                                 Logout
@@ -115,6 +126,7 @@ const WebSocketClient = () => {
                             <input
                                 type="text"
                                 placeholder="Enter your username..."
+                                // onKeyPress={handleKeypress}
                                 onChange={(e) => setUsername(e.target.value)}
                                 value={username}
                                 className="w-full p-3 mb-4 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" 
