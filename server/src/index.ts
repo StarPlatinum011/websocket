@@ -36,7 +36,12 @@ wss.on('connection', (ws) => {
         const payload = JSON.stringify({
             username: userData.username || 'anon',
             message: userData.message,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toLocaleTimeString('en-US', {
+                    hour:'numeric',
+                    minute: '2-digit',
+                    second:'2-digit',
+                    hour12: false
+                }),
         });
 
         // Broadcast

@@ -1,72 +1,126 @@
 import { useEffect, useState, useRef } from "react";
 import { MessageSquareMore } from "lucide-react";
+import ChatArea from "./ChatArea";
+import { Message } from "../types/MsgType";
 
-interface Message {
-    username: string;
-    message: string;
-    timestamp: string;
-    type?: string;
-}
 
 const WebSocketClient = () => {
     const [displayMessages, setDisplayMessages] = useState<Message[]>([]);
-    const [ws, setWs] = useState<WebSocket | null>(null);
     const [msgInput, setMsgInput] = useState('');
     const [username, setUsername] = useState('');
     const [isUsernameSet, setIsUsernameSet] = useState(false);
+    const [connectionStatus, setConnectionStatus ] = useState<'connecting'| 'connected' | 'disconnected'>('disconnected');
+
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const wsRef = useRef<WebSocket | null>(null)
+    const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const isConnectingRef = useRef(false); //prevent duplicate connections 
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [displayMessages]);
 
-    //ws connection
+    //Web Socket connection
     useEffect(() => {
-        let socket: WebSocket | null = null;
-        let reconnectTimeout: NodeJS.Timeout | null = null;
+        //prevent duplicate connection
+        // if the ref is true, just return and do nothing
+        if(isConnectingRef.current) return;
 
-        const connect = () => {
-           
-            socket = new WebSocket('ws://localhost:8080');
-            console.log('socket is set');
-            
-            
-            socket.onopen = () => console.log('Connected to WebSocket');
+        const connect = () => { 
+
+            //Check if already connected or connecting
+            if( wsRef.current?.readyState === WebSocket.OPEN ||
+                wsRef.current?.readyState === WebSocket.CONNECTING){
+                  return;  
+                } 
+                isConnectingRef.current = true;
+                setConnectionStatus('connecting');
+
+            const socket = new WebSocket('ws://localhost:8080')
+            wsRef.current = socket; //storing the socekt in the ref to prevent re-render
+             
+            socket.onopen = () => {
+                console.log('Connected to WebSocket');
+                setConnectionStatus('connected');
+                isConnectingRef.current = false;
+            } 
+
             socket.onmessage = (event) => {
+                if (typeof event.data !== 'string') {
+                    console.warn("Unexpected non-string WS payload: ", event.data);
+                    return;
+                }
                 const receivedMsg = JSON.parse(event.data);
                 setDisplayMessages((prev) => [...prev, receivedMsg]);
                 console.log('this is a message from be ', receivedMsg);  
             }
 
-            socket.onerror = (err) => console.error('WebSocket error', err);
+            socket.onerror = (err) => {
+                console.error('WebSocket error:', err);
+                setConnectionStatus('disconnected');
+                isConnectingRef.current = false;
+            };
+
             socket.onclose = () => {
                 console.log('WebSocket disconnected, Reconnecting ... ');
-                // attempt to reconnect after 3 seconds
-                reconnectTimeout = setTimeout(connect, 3000);
-            }
+                setConnectionStatus('disconnected');
+                wsRef.current = null;
+                isConnectingRef.current = false;
 
-            setWs(socket);
+                // Clear any existing reconnect timeout
+                if (reconnectTimeoutRef.current) {
+                    clearTimeout(reconnectTimeoutRef.current);
+                }
+
+                // Attempt to reconnect after 3 seconds
+                reconnectTimeoutRef.current = setTimeout(() => {
+                    connect();
+                }, 3000);
+            }
         }
 
         connect();
 
+        //cleanup function
         return () => {
-            if (socket) socket.close();
-            if (reconnectTimeout) clearTimeout(reconnectTimeout);
+             if (reconnectTimeoutRef.current) {
+                clearTimeout(reconnectTimeoutRef.current);
+            }
+            if (wsRef.current) {
+                // Remove event listeners to prevent memory leaks
+                wsRef.current.onclose = null;
+                wsRef.current.onerror = null;
+                wsRef.current.onmessage = null;
+                wsRef.current.onopen = null;
+                
+                if (wsRef.current.readyState === WebSocket.OPEN) {
+                    wsRef.current.close();
+                }
+                wsRef.current = null;
+            }
+            isConnectingRef.current = false;
         }
-    }, []);
+    }, []); // Empty dependency arry so it only run once
     
     const sendMessages = () => {
-        if (ws && ws.readyState === WebSocket.OPEN && msgInput.trim() && username.trim()) {
+        const socket = wsRef.current;
+
+        if (socket && socket.readyState === WebSocket.OPEN && msgInput.trim() && username.trim()) {
             const messageToSend: Message = {
                 username,
                 message: msgInput,
-                timestamp: new Date().toISOString(),
+                timestamp: new Date().toLocaleTimeString('en-US', {
+                    month: 'short',
+                    hour:'numeric',
+                    minute: '2-digit',
+                    second:'2-digit',
+                    hour12: true
+                }),
                 type: 'message'
             }
 
-            ws.send(JSON.stringify(messageToSend));
+            socket.send(JSON.stringify(messageToSend));
             setMsgInput('');
         }
     }
@@ -89,6 +143,8 @@ const WebSocketClient = () => {
         setDisplayMessages([]);
         console.log("User logged out and session cleared.");
     }
+
+    const isConnected = wsRef.current?.readyState === WebSocket.OPEN;
 
     // --- UI Rendering ---
     return (
@@ -117,6 +173,17 @@ const WebSocketClient = () => {
                         </span>
                     )}
                 </header>
+                
+                {/* Connection Status Indicator */}
+                <div className={`px-4 py-2 text-sm text-center ${
+                    connectionStatus === 'connected' ? 'bg-green-100 text-green-700' :
+                    connectionStatus === 'connecting' ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-red-100 text-red-700'
+                }`}>
+                    {connectionStatus === 'connected' ? '🟢 Connected' :
+                     connectionStatus === 'connecting' ? '🟡 Connecting...' :
+                     '🔴 Disconnected - Reconnecting...'}
+                </div>
 
                 {/* Message Area / Login Screen */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -126,7 +193,7 @@ const WebSocketClient = () => {
                             <input
                                 type="text"
                                 placeholder="Enter your username..."
-                                // onKeyPress={handleKeypress}
+                                onKeyPress={(e)=> e.key === 'Enter' && handleUsernameSet()}
                                 onChange={(e) => setUsername(e.target.value)}
                                 value={username}
                                 className="w-full p-3 mb-4 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" 
@@ -140,37 +207,15 @@ const WebSocketClient = () => {
                             </button>
                         </div>
                     ) : (
-                        displayMessages.map((msg, index) => {
-                            const isOwnMessage = msg.username === username;
-                            return (
-                                <div 
-                                    key={index}
-                                    className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
-                                >
-                                    <div className={`max-w-xs lg:max-w-md p-3 rounded-xl shadow-md ${
-                                        isOwnMessage 
-                                            ? 'bg-blue-500 text-white rounded-br-none' 
-                                            : 'bg-gray-200 text-gray-800 rounded-tl-none' 
-                                    }`}>
-                                        <div className="flex justify-between items-center mb-1">
-                                            <strong className={`font-semibold ${isOwnMessage ? 'text-blue-100' : 'text-blue-600'}`}>
-                                                {isOwnMessage ? 'You' : msg.username}
-                                            </strong>
-                                            <span className={`text-xs ml-3 ${isOwnMessage ? 'text-blue-200' : 'text-gray-500'}`}>
-                                                {msg.timestamp}
-                                            </span>
-                                        </div>
-                                        <p className="whitespace-pre-wrap">{msg.message}</p>
-                                    </div>
-                                </div>
-                            );
-                        })
+                        <ChatArea message={displayMessages} username={username}/>
                     )}
+
                     <div ref={messagesEndRef} />
                 </div>
 
                 {/* Message Input Area */}
-                {isUsernameSet && <footer className="p-4 border-t bg-gray-50">
+                {isUsernameSet && 
+                <footer className="p-4 border-t bg-gray-50">
                     <div className="flex space-x-3">
                         <input
                             type="text"
@@ -178,12 +223,12 @@ const WebSocketClient = () => {
                             value={msgInput}
                             onChange={(e) => setMsgInput(e.target.value)}
                             onKeyPress={handleKeypress}
-                            disabled={!isUsernameSet || !ws || ws.readyState !== WebSocket.OPEN}
+                            disabled={!isConnected}
                             className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 text-gray-900" 
                         />
                         <button
                             onClick={sendMessages}
-                            disabled={!isUsernameSet || !msgInput.trim()}
+                            disabled={!isConnected || !msgInput.trim()}
                             className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-bold py-3 px-6 rounded-lg transition duration-200 disabled:opacity-50"
                         >
                             Send
