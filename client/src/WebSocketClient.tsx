@@ -33,7 +33,7 @@ const WebSocketClient = () => {
             
             
             socket.onopen = () => console.log('Connected to WebSocket');
-            socket.onmessage = async (event) => {
+            socket.onmessage = (event) => {
                 const receivedMsg = JSON.parse(event.data);
                 setDisplayMessages((prev) => [...prev, receivedMsg]);
                 console.log('this is a message from be ', receivedMsg);  
@@ -63,7 +63,7 @@ const WebSocketClient = () => {
                 username,
                 message: msgInput,
                 timestamp: new Date().toISOString(),
-                type: 'heartbeat'
+                type: 'message'
             }
 
             ws.send(JSON.stringify(messageToSend));
