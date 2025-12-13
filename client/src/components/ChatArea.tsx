@@ -15,7 +15,7 @@ const ChatArea = ({message, username}: ChatAreaProps) => {
                         key={index}
                         className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                     >
-                        <div className={`max-w-xs lg:max-w-md p-3 rounded-xl shadow-md ${
+                        <div className={`max-w-xs lg:max-w-md p-3 mt-1 rounded-xl shadow-md ${
                             isOwnMessage 
                                 ? 'bg-blue-500 text-white rounded-br-none' 
                                 : 'bg-gray-200 text-gray-800 rounded-tl-none' 
