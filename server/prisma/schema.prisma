@@ -16,17 +16,19 @@ datasource db {
 model User {
   id          String    @id @default(uuid())
   username    String    @unique
-  created_at  DateTime  @default(now())
+  password    String    
+  createdAt  DateTime  @default(now())
 
-  rooms    RoomMember[]
-  messages Message[]
+  sessions    Session[]
+  rooms       RoomMember[]
+  messages    Message[]
 }
 
 model Room {
   id          String       @id @default(uuid())
   name        String?
-  is_private  Boolean      @default(false)
-  created_at  DateTime     @default(now())
+  isPrivate  Boolean      @default(false)
+  createdAt  DateTime     @default(now())
 
   members     RoomMember[]
   messages    Message[]
@@ -34,20 +36,29 @@ model Room {
 
 model RoomMember {
   id          String       @id @default(uuid())
-  room_id     String 
-  user_id     String
+  userId     String
+  roomId     String 
 
-  user  User @relation(fields: [user_id], references: [id])
-  room  Room @relation(fields: [room_id], references: [id])
+  user  User @relation(fields: [userId], references: [id])
+  room  Room @relation(fields: [roomId], references: [id])
 }
 
 model Message {
-  id          String       @id @default(ulid())
-  room_id     String
-  sender_id   String
+  id          String       @id @default(uuid())
+  roomId     String
+  senderId   String
   content     String
-  created_at  DateTime  @default(now())
+  createdAt  DateTime  @default(now())
 
-  room    Room @relation(fields: [room_id], references: [id])
-  sender  User @relation(fields: [sender_id], references: [id])
+  room    Room @relation(fields: [roomId], references: [id])
+  sender  User @relation(fields: [senderId], references: [id])
+}
+
+model Session {
+  id          String        @id @default(uuid())
+  userId      String 
+  expiresAt  DateTime
+  createdAt  DateTime      @default(now())
+
+  user    User @relation(fields: [userId], references: [id])
 }

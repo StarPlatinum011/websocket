@@ -7,23 +7,19 @@ Prisma for ORM
 Splunk for logs
 
 
-backend/
-  src/
-    server.ts
-    routes/
-      auth.routes.ts
-      messages.routes.ts
-    controllers/
-      auth.controller.ts
-      messages.controller.ts
-    services/
-      auth.service.ts
-      messages.service.ts
-    websocket/
-      index.ts
-      message.gateway.ts
-    libs/
-      eventBus.ts
-      logger.ts
-    db/
-      prisma.ts
+src/
+├─ server.ts        ← bootstraps everything
+├─ http/
+│   ├─ app.ts       ← Express/Fastify app
+│   ├─ routes/
+│   └─ controllers/
+├─ ws/
+│   ├─ index.ts     ← WebSocket server setup
+│   ├─ connection.ts
+│   ├─ handlers/
+│   │   ├─ message.ts
+│   │   ├─ room.ts
+│   │   └─ presence.ts
+│   └─ state.ts     ← in-memory maps (users, rooms)
+├─ db/
+│   └─ prisma.ts
