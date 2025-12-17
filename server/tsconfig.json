@@ -14,7 +14,7 @@
         "types": ["node"]                         // Include Node.js types
 
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/db"],
   "exclude": ["node_modules", "dist"]
 
 }

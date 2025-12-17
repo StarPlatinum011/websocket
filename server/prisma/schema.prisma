@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -17,18 +17,18 @@ model User {
   id          String    @id @default(uuid())
   username    String    @unique
   password    String    
-  createdAt  DateTime  @default(now())
+  createdAt   DateTime  @default(now())
 
   sessions    Session[]
-  rooms       RoomMember[]
-  messages    Message[]
+  // rooms       RoomMember[]
+  // messages    Message[]
 }
 
 model Room {
   id          String       @id @default(uuid())
   name        String?
-  isPrivate  Boolean      @default(false)
-  createdAt  DateTime     @default(now())
+  isPrivate   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
 
   members     RoomMember[]
   messages    Message[]
@@ -36,29 +36,29 @@ model Room {
 
 model RoomMember {
   id          String       @id @default(uuid())
-  userId     String
-  roomId     String 
+  userId      String
+  roomId      String 
 
-  user  User @relation(fields: [userId], references: [id])
+  // user  User @relation(fields: [userId], references: [id])
   room  Room @relation(fields: [roomId], references: [id])
 }
 
 model Message {
   id          String       @id @default(uuid())
-  roomId     String
-  senderId   String
+  roomId      String
+  senderId    String
   content     String
-  createdAt  DateTime  @default(now())
+  createdAt   DateTime  @default(now())
 
   room    Room @relation(fields: [roomId], references: [id])
-  sender  User @relation(fields: [senderId], references: [id])
+  // sender  User @relation(fields: [senderId], references: [id])
 }
 
 model Session {
   id          String        @id @default(uuid())
   userId      String 
-  expiresAt  DateTime
-  createdAt  DateTime      @default(now())
+  expiresAt   DateTime
+  createdAt   DateTime      @default(now())
 
   user    User @relation(fields: [userId], references: [id])
 }

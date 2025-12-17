@@ -2,6 +2,11 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("auth");
+router.post("/login");
+router.post("/register")
+router.post("/logout")
+
+router.get("/")
+
 
 export default router;

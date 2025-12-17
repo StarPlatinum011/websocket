@@ -1,5 +1,7 @@
-import express, { Application, Router, Request, Response } from "express";
 import dotenv from "dotenv";
+import express, { Application, Request, Response, Router } from "express";
+
+import authRouter from './routes/authRoute.js'
 
 dotenv.config();
 const app:Application = express();
@@ -10,5 +12,5 @@ router.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ server: "http", status: "ok" });
 });
 
-app.use("/", router);
+app.use("/auth", authRouter);
 export { app };

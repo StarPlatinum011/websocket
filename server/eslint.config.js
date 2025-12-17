@@ -7,7 +7,12 @@ import perfectionist from "eslint-plugin-perfectionist";
 export default tseslint.config(
   {
     ignores: ["**/*.js"],
+    rules: {
+      "sort-keys": "off",
+      "sort-destructure-keys/sort-destructure-keys": "off"
+    }
   },
+  
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
