@@ -1,13 +1,9 @@
 import bcrypt from 'bcrypt'
 import { Request, Response } from "express";
-
 import { prisma } from "../../db/prisma.js"
 import { loginSchema, registerSchema } from '../schemas/user.js';
+import { createSession } from '../../utils/session.js';
 
-interface UserBody {
-    password: string;
-    username: string;
-}
 
 export const registerUser =  async (req: Request, res:Response) => {
     try {
@@ -79,9 +75,11 @@ export const loginUser = async (req: Request, res:Response) => {
             return res.status(401).json({ error: 'Wrong password.'})
         }
 
+        const session = await createSession(user.id)
+
         return res.status(200).json({
             message: 'Logged in successfully.',
-            userId: user.id
+            userId: session.id
         })
         
         
