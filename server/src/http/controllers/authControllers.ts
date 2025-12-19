@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import { Request, Response } from "express";
 
 import { prisma } from "../../db/prisma.js"
+import { loginSchema, registerSchema } from '../schemas/user.js';
 
 interface UserBody {
     password: string;
@@ -10,24 +11,15 @@ interface UserBody {
 
 export const registerUser =  async (req: Request, res:Response) => {
     try {
-        const { password, username } = req.body as UserBody; 
-
-        // const hashed = await hashPassword(password);
-
-        //validate inputs
-        if(!username || !password ) {
-            return res.status(400).json({
-                error: 'Username and password not provided.'
-            })
+        //zod validation 
+        const parsed = registerSchema.safeParse(req.body);
+        if(!parsed.success) {
+            return res.status(400).json({errors: parsed.error})
         }
+        const { password, username } = parsed.data; 
 
-        if(password.length < 8) {
-            return res.status(400).json({
-                error: 'Passwornd must be at least 8 character'
-            })
-        }
 
-        // check db
+        // check db if username is taken
         const existingUser = await prisma.user.findUnique({
             where: { username }
         });
@@ -55,7 +47,7 @@ export const registerUser =  async (req: Request, res:Response) => {
             user
         })
     } catch (error) {
-        console.error('Register error: ', 500)
+        console.error('Register error: ', error)
         return res.status(500).json({ 
             error: error instanceof Error ? error.message : "Internal server error",
         });
@@ -64,11 +56,13 @@ export const registerUser =  async (req: Request, res:Response) => {
 
 export const loginUser = async (req: Request, res:Response) => {
     try {
-        const {password, username } = req.body as UserBody;
 
-        if( !password || !username ) {
-            return res.status(400).json({error: "Username and password not provided."});
+        const parsed = loginSchema.safeParse(req.body)
+        if(!parsed.success) {
+            return res.status(400).json({errors: parsed.error})
         }
+
+        const {password, username } = parsed.data;
 
         const user = await prisma.user.findUnique({
             where: {username}
@@ -92,7 +86,7 @@ export const loginUser = async (req: Request, res:Response) => {
         
         
     } catch (error) {
-        console.error('Register error: ', 500)
+        console.error('Register error: ', error)
         return res.status(500).json({ 
             error: error instanceof Error ? error.message : "Internal server error",
         });
