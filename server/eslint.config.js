@@ -24,5 +24,5 @@ export default tseslint.config(
       },
     },
   },
-  perfectionist.configs["recommended-natural"],
+  // perfectionist.configs["recommended-natural"],
 );

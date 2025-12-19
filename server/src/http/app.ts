@@ -1,16 +1,22 @@
-import dotenv from "dotenv";
-import express, { Application, Request, Response, Router } from "express";
-
+import "dotenv/config";
+import express, { Application } from "express";
 import authRouter from './routes/authRoute.js'
+// import { sessionMiddleware } from "../config/session.js";
 
-dotenv.config();
+
 const app:Application = express();
+
+console.log('databases: ', process.env.DATABASE_URL)
 app.use(express.json());
+//Session middleware- before routes
+// app.use(sessionMiddleware)
+app.use("/api/auth", authRouter);
 
-const router = Router();
-router.get("/health", (req: Request, res: Response) => {
-  res.status(200).json({ server: "http", status: "ok" });
-});
 
-app.use("/auth", authRouter);
-export { app };
+
+const PORT = process.env.PORT ?? 3000;
+
+app.listen(PORT, ()=> {
+  console.log("Server running on port: ", PORT);
+})
+
