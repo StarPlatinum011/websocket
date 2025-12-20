@@ -9,8 +9,9 @@ export const requireSession = async (req: Request, res: Response, next: NextFunc
         try {
             const session = await validateSession(token);
 
-            //attach userId to req for downstream handlers
+            //attach userId and sessionId to req for downstream handlers
             req.userId = session.userId;
+            req.sessionId = session.id
             next()
 
         } catch (err) {

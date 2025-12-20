@@ -35,4 +35,8 @@ export async function cleanupExpiredSessions() {
     })
 }
 
+export async function deleteSession( sessionId: string ) {
+    const session = await prisma.session.delete({where: {id: sessionId}})
+    return session;
+}
 

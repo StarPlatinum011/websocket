@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import { Request, Response } from "express";
 import { prisma } from "../../db/prisma.js"
 import { loginSchema, registerSchema } from '../schemas/user.schema.js';
-import { createSession } from '../../utils/session.js';
+import { createSession, deleteSession } from '../../utils/session.js';
 
 
 export const registerUser =  async (req: Request, res:Response) => {
@@ -90,7 +90,15 @@ export const loginUser = async (req: Request, res:Response) => {
             error: error instanceof Error ? error.message : "Internal server error",
         });
     }
+  
+}
+export const userLogout = async (req:Request, res:Response) => {
+    const sessionId = req.sessionId;
+    if(!sessionId) return res.status(400).json({error: "No session to logout."})
 
+    await deleteSession(sessionId)
 
-
+    res.status(204).send({
+        message: 'Logged out successfully.'
+    })
 }
