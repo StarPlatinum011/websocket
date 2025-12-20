@@ -1,12 +1,16 @@
 import {prisma} from "../db/prisma.js"
-import { add } from "date-fns"
+import { addHours } from "date-fns"
+
+const SESSION_TTL_HOURS = 24;
 
 //create a new session for a user 
-export async function createSession(userId: string, hoursValid = 2) {
+export async function createSession(userId: string) {
+    const expiresAt = addHours(new Date, SESSION_TTL_HOURS)
+
     const session = await prisma.session.create({
         data: {
             userId,
-            expiresAt: add(new Date(), {hours: hoursValid})
+            expiresAt
         },
     })
     
@@ -15,14 +19,16 @@ export async function createSession(userId: string, hoursValid = 2) {
 
 //validate session token
 export async function validateSession(sessionId: string) {
-    const session = await prisma.session.findUnique(
-        {
-            where: {id: sessionId}
-        }
-    )
+
+    const session = await prisma.session.findUnique({
+        where: {id: sessionId}
+    });
+
+    if(!session) throw new Error("Invalid session");
     
-    if(!session || session.expiresAt < new Date()) {
-        throw new Error("Invalid or expired session");
+    if( session.expiresAt < new Date()) {
+        await deleteSession(session.id)
+        throw new Error("Session Expired!")
     }
 
     return session
@@ -35,6 +41,7 @@ export async function cleanupExpiredSessions() {
     })
 }
 
+//delete session on logout
 export async function deleteSession( sessionId: string ) {
     const session = await prisma.session.delete({where: {id: sessionId}})
     return session;
