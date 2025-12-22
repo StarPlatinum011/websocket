@@ -1,4 +1,5 @@
 
 import WebSocket from "ws";
 
-export const users = new Map<string, WebSocket>();
+export const usersMap = new Map<string, WebSocket>();
+export const sessionsMap = new Map<string, WebSocket>();

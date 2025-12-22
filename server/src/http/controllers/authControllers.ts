@@ -94,7 +94,7 @@ export const loginUser = async (req: Request, res:Response) => {
 }
 export const userLogout = async (req:Request, res:Response) => {
     const sessionId = req.sessionId;
-    if(!sessionId) return res.status(400).json({error: "No session to logout."})
+    if(!sessionId) return res.status(400).json({error: "No sessions to logout."})
 
     await deleteSession(sessionId)
 

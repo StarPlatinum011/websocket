@@ -1,5 +1,6 @@
 import {prisma} from "../db/prisma.js"
 import { addHours } from "date-fns"
+import { sessionsMap } from "../ws/state.js";
 
 const SESSION_TTL_HOURS = 24;
 
@@ -43,7 +44,12 @@ export async function cleanupExpiredSessions() {
 
 //delete session on logout
 export async function deleteSession( sessionId: string ) {
-    const session = await prisma.session.delete({where: {id: sessionId}})
-    return session;
+    await prisma.session.delete({where: {id: sessionId}})
+    
+    const ws = sessionsMap.get(sessionId); //because map has id and ws
+    if(ws) {
+        ws.close(4004, "Session invalidated.");
+        sessionsMap.delete(sessionId);
+    }
 }
 

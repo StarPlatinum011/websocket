@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 import { validateSession } from "../utils/session.js";
-import { users } from "./state.js";
+import { sessionsMap, usersMap } from "./state.js";
 import { Request } from "express";
 
 export function handleConnection(ws: WebSocket, req: Request) {
@@ -25,12 +25,18 @@ export function handleConnection(ws: WebSocket, req: Request) {
             ws.sessionId = session.id;
             
             //Register connection
-            users.set(session.userId, ws)
+            usersMap.set(session.userId, ws)
+            sessionsMap.set(session.userId, ws)
     
             ws.send(JSON.stringify({ message: "Authenticated." }));
 
             ws.on('close', ()=> {
-                users.delete(session.userId)
+                if(ws.sessionId) {
+                    sessionsMap.delete(ws.sessionId)
+                }
+                if(ws.userId) {
+                    usersMap.delete(ws.userId)
+                }
             })
         } catch (err) {
             ws.close(4003, (err as Error).message)

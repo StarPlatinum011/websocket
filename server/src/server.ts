@@ -15,5 +15,5 @@ initWebSocketServer(server);
 
 // Start listening for both HTTP and WebSocket connections
 server.listen(PORT, () => {
-    console.log(`HTTP/WS Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
