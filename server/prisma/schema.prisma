@@ -19,8 +19,8 @@ model User {
   createdAt   DateTime  @default(now())
 
   sessions    Session[]
-  // rooms       RoomMember[]
-  // messages    Message[]
+  rooms       RoomMember[]
+  messages    Message[]
 }
 
 model Room {
@@ -38,7 +38,7 @@ model RoomMember {
   userId      String
   roomId      String 
 
-  // user  User @relation(fields: [userId], references: [id])
+  user  User @relation(fields: [userId], references: [id])
   room  Room @relation(fields: [roomId], references: [id])
 }
 
@@ -50,7 +50,7 @@ model Message {
   createdAt   DateTime  @default(now())
 
   room    Room @relation(fields: [roomId], references: [id])
-  // sender  User @relation(fields: [senderId], references: [id])
+  sender  User @relation(fields: [senderId], references: [id])
 }
 
 model Session {
