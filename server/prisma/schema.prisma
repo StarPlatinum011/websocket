@@ -40,6 +40,10 @@ model RoomMember {
 
   user  User @relation(fields: [userId], references: [id])
   room  Room @relation(fields: [roomId], references: [id])
+
+  
+  @@unique([roomId, userId]) //same row with same roomId and userId is not permitted
+  @@index([userId])
 }
 
 model Message {
@@ -51,6 +55,9 @@ model Message {
 
   room    Room @relation(fields: [roomId], references: [id])
   sender  User @relation(fields: [senderId], references: [id])
+
+  @@index([roomId, createdAt])
+
 }
 
 model Session {
