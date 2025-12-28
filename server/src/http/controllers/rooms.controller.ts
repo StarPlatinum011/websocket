@@ -1,45 +1,51 @@
 import { Request, Response } from "express";
 import { prisma } from "../../db/prisma.js";
 
+interface CreateRoomBody {
+  targetUserId: string
+}
 //POST /api/rooms
-export const createOrGetRoom = async (req: Request, res: Response) => {
-    const userId = req.userId; //retrieve from session middleware 
-    const { targetUserId } = req.body;
+export const createOrGetRoom = async (
+  req: Request<Record<string, never>, unknown, CreateRoomBody>,
+  res: Response
+) => {
+  const userId = req.userId; //retrieve from session middleware 
+  const { targetUserId } = req.body;
 
-    if( !targetUserId || targetUserId === userId ){
-        return res.status(400).json({error: 'Invalid target user'});
-    }
+  if( !targetUserId || !userId ){
+      return res.status(400).json({error: 'Invalid target user'});
+  }
 
-    //search existing room with both users
-    const existingRoom = await prisma.room.findFirst({
-        where:{
-            members: {
-                every:{
-                    userId: { in: [userId, targetUserId]} //userId == userId OR userId == targetUserId (first userId is column name in RoomMember table)
-                }
-            }
-        },
-        include: { members: true}
-    });
+  //search existing room with both users
+  const existingRoom = await prisma.room.findFirst({
+      where:{
+          members: {
+              every:{
+                  userId: { in: [userId, targetUserId]} //userId == userId OR userId == targetUserId (first userId is column name in RoomMember table)
+              }
+          }
+      },
+      include: { members: true}
+  });
 
-    if(existingRoom) {
-        return res.status(200).json(existingRoom)
-    }
+  if(existingRoom) {
+      return res.status(200).json(existingRoom)
+  }
 
-    //Create room + members in transaction
-    const room = await prisma.$transaction(async (tx) => {
-        const newRoom = await tx.room.create({ data: {} });
+  //Create room + members in transaction
+  const room = await prisma.$transaction(async (tx) => {
+      const newRoom = await tx.room.create({ data: {} });
 
-        await tx.roomMember.createMany({
-            data: [
-                { roomId: newRoom.id, userId },
-                { roomId: newRoom.id, userId: targetUserId }
-            ]
-        })
-        return newRoom;
-    });
+      await tx.roomMember.createMany({
+          data: [
+              { roomId: newRoom.id, userId },
+              { roomId: newRoom.id, userId: targetUserId }
+          ]
+      })
+      return newRoom;
+  });
 
-    return res.status(201).json(room);
+  return res.status(201).json(room);
 }
 
 //GET api/rooms
@@ -47,12 +53,12 @@ export const getUserRooms = async (req: Request, res: Response) => {
   const userId = req.userId;
 
   const rooms = await prisma.room.findMany({
-    where: {
+    where: { //filter query
       members: {
         some: { userId }
       }
     },
-    include: {
+    include: {// selection query
       members: {
         include: {
           user: {
