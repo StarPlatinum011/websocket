@@ -20,9 +20,9 @@ export const  handleSendMessage = async (
     })
 
     // Side effect - Real time
-    // broadcastToRoom(payload.roomId, {
-    //     type: "NEW_MESSAGE",
-    //     payload: message
-    // })
+    broadcastToRoom(payload.roomId, {
+        type: "NEW_MESSAGE",
+        payload: message
+    })
 
 }
