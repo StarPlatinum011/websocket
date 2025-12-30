@@ -1,5 +1,5 @@
 
-import WebSocket from "ws";
+import { AuthenticateWS } from "./interface/authWS.js";
 
-export const usersMap = new Map<string, WebSocket>();
-export const sessionsMap = new Map<string, WebSocket>();
+export const usersMap = new Map<string, AuthenticateWS>();
+export const sessionsMap = new Map<string, AuthenticateWS>();

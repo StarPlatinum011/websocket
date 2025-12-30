@@ -1,9 +1,10 @@
-import WebSocket from "ws";
 import { validateSession } from "../utils/session.js";
 import { sessionsMap, usersMap } from "./state.js";
 import { Request } from "express";
+import { handleMessage } from "./handlers/message.js";
+import { AuthenticateWS } from "./interface/authWS.js";
 
-export function handleConnection(ws: WebSocket, req: Request) {
+export function handleConnection(ws: AuthenticateWS, req: Request) {
     void(async()=> {
         try {
             if(!req.url) {
@@ -29,6 +30,10 @@ export function handleConnection(ws: WebSocket, req: Request) {
             sessionsMap.set(session.userId, ws)
     
             ws.send(JSON.stringify({ message: "Authenticated." }));
+
+            ws.on('message',  (data) => {
+                void handleMessage(ws, data)
+            })
 
             ws.on('close', ()=> {
                 if(ws.sessionId) {
