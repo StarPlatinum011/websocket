@@ -1,9 +1,9 @@
 import { RawData } from "ws";
 import { WSClientMessage } from "../protocols.js";
 import {handleSendMessage} from './sendMessage.js'
-import { AuthenticateWS } from "../interface/authWS.js";
+import { AuthenticatedWS } from "../types/types.js";
 
-export const handleMessage = async (ws: AuthenticateWS, data: RawData) => {
+export const handleMessage = async (ws: AuthenticatedWS, data: RawData) => {
     const rawText = normalizeMessage(data)
     const parsed = WSClientMessage.safeParse(JSON.parse(rawText));
 
@@ -17,7 +17,7 @@ export const handleMessage = async (ws: AuthenticateWS, data: RawData) => {
 
     switch (parsed.data.type) {
         case "SEND_MESSAGE":
-            // await handleSendMessage(ws, parsed.data.payload)
+            await handleSendMessage(ws, parsed.data.payload)
             break;
     }
 }

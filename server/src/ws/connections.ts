@@ -2,13 +2,13 @@ import { validateSession } from "../utils/session.js";
 import { sessionsMap, usersMap } from "./state.js";
 import { Request } from "express";
 import { handleMessage } from "./handlers/message.js";
-import { AuthenticateWS } from "./interface/authWS.js";
+import { AuthenticatedWS } from "./types/types.js";
 
-export function handleConnection(ws: AuthenticateWS, req: Request) {
+export function handleConnection(ws: AuthenticatedWS, req: Request) {
     void(async()=> {
         try {
             if(!req.url) {
-                ws.close(4000, "Invalide request.");
+                ws.close(4000, "Invalid request.");
                 return;
             }
 
@@ -31,6 +31,7 @@ export function handleConnection(ws: AuthenticateWS, req: Request) {
     
             ws.send(JSON.stringify({ message: "Authenticated." }));
 
+            // Handle messaging 
             ws.on('message',  (data) => {
                 void handleMessage(ws, data)
             })
