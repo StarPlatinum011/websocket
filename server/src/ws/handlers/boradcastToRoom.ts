@@ -1,16 +1,25 @@
+import { rooms } from "../state.js";
 
 
-type WSMessage <T = unknown> ={
+interface WSMessage <T = unknown> {
     type: string;
     payload: T;
 }
-
-const room = new Map<string, Set<WebSocket>>();
 
 export const broadcastToRoom = (
     roomId: string,
     message: WSMessage 
 ) => {
 
+    //check if user is in the memory
+    const room = rooms.get(roomId)
+    if(!room) throw new Error("User is not allowed in the room.");
 
+    const data = JSON.stringify(message);
+
+    for (const ws of room) {
+        if(ws.readyState === WebSocket.OPEN) {
+            ws.send(data);
+        }
+    }
 }
