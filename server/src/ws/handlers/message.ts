@@ -2,6 +2,7 @@ import { RawData } from "ws";
 import { WSClientMessage } from "../protocols.js";
 import {handleSendMessage} from './sendMessage.js'
 import { AuthenticatedWS } from "../types/types.js";
+import { handleJoinRoom } from "./joinRoom.js";
 
 export const handleMessage = async (ws: AuthenticatedWS, data: RawData) => {
     const rawText = normalizeMessage(data)
@@ -19,6 +20,11 @@ export const handleMessage = async (ws: AuthenticatedWS, data: RawData) => {
         case "SEND_MESSAGE":
             await handleSendMessage(ws, parsed.data.payload)
             break;
+
+        case "JOIN_ROOM":
+          handleJoinRoom(parsed.data.payload.roomId, ws);
+          break;
+
     }
 }
 

@@ -2,7 +2,7 @@ import { rooms, socketToRooms } from "../state.js";
 import { AuthenticatedWS } from "../types/types.js";
 
 
-export const joinRoom =(
+export const handleJoinRoom =(
     roomId: string,
     ws: AuthenticatedWS
 )=> {

@@ -1,6 +1,7 @@
 import { prisma } from "../../db/prisma.js";
 import { AuthenticatedWS, SendMessagePayload } from "../types/types.js"
 import { assertRoomMembership } from "../utils/membershipCheck.js"
+import { broadcastToRoom } from "./boradcastToRoom.js";
 
 export const  handleSendMessage = async (
     ws: AuthenticatedWS,
