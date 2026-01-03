@@ -20,3 +20,16 @@ export const handleJoinRoom =(
     socketToRooms.get(ws)?.add(roomId)
 
 }
+
+export const handleLeaveRoom = (
+    roomId: string,
+    ws: AuthenticatedWS
+) => {
+
+    //get the Set() of sockets
+    const sockets = rooms.get(roomId);
+    if(!sockets) return;
+
+
+    sockets.delete(ws);
+}

@@ -14,7 +14,15 @@ export const WSClientMessage = z.discriminatedUnion("type", [
         payload: z.object({
             roomId: z.uuid()
         })
+    }),
+
+    z.object({
+        type: z.literal("LEAVE_ROOM"),
+        payload: z.object({
+            roomId: z.uuid()
+        }),
     })
+    
 ])
 
 export const WSServerMessage = z.discriminatedUnion('type', [
