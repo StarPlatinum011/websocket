@@ -1,4 +1,4 @@
-import { rooms, socketToRooms } from "../state.js";
+import { roomsMap, socketToRooms } from "../state.js";
 import { AuthenticatedWS } from "../types/types.js";
 
 
@@ -7,11 +7,11 @@ export const handleJoinRoom =(
     ws: AuthenticatedWS
 )=> {
 
-    if(!rooms.has(roomId)) {
-        rooms.set(roomId, new Set())
+    if(!roomsMap.has(roomId)) {
+        roomsMap.set(roomId, new Set())
     }
 
-    rooms.get(roomId)?.add(ws);
+    roomsMap.get(roomId)?.add(ws);
 
     if(!socketToRooms.has(ws)) {
         socketToRooms.set(ws, new Set());
@@ -27,7 +27,7 @@ export const handleLeaveRoom = (
 ) => {
 
     //get the Set() of sockets
-    const sockets = rooms.get(roomId);
+    const sockets = roomsMap.get(roomId);
     if(!sockets) return;
 
 

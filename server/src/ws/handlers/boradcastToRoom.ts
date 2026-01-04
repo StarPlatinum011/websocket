@@ -1,4 +1,4 @@
-import { rooms } from "../state.js";
+import { roomsMap } from "../state.js";
 
 
 interface WSMessage <T = unknown> {
@@ -12,7 +12,7 @@ export const broadcastToRoom = (
 ) => {
 
     //check if user is in the memory
-    const room = rooms.get(roomId)
+    const room = roomsMap.get(roomId)
     if(!room) throw new Error("User is not allowed in the room.");
 
     const data = JSON.stringify(message);

@@ -1,8 +1,9 @@
 import { validateSession } from "../utils/session.js";
-import { sessionsMap, usersMap } from "./state.js";
+import { sessionsMap, socketToRooms, usersMap } from "./state.js";
 import { Request } from "express";
 import { handleMessage } from "./handlers/message.js";
 import { AuthenticatedWS } from "./types/types.js";
+import { handleDisconnection } from "./utils/disconnection.js";
 
 export function handleConnection(ws: AuthenticatedWS, req: Request) {
     void(async()=> {
@@ -43,6 +44,9 @@ export function handleConnection(ws: AuthenticatedWS, req: Request) {
                 if(ws.userId) {
                     usersMap.delete(ws.userId)
                 }
+                
+                handleDisconnection(ws);
+                
             })
         } catch (err) {
             ws.close(4003, (err as Error).message)
@@ -50,3 +54,4 @@ export function handleConnection(ws: AuthenticatedWS, req: Request) {
     })
    
 }
+
