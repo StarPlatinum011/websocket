@@ -28,6 +28,8 @@ model Room {
   name        String?
   isPrivate   Boolean      @default(false)
   createdAt   DateTime     @default(now())
+  type        RoomType
+  memberHash  String?       @unique
 
   members     RoomMember[]
   messages    Message[]
@@ -67,4 +69,9 @@ model Session {
   createdAt   DateTime      @default(now())
 
   user    User @relation(fields: [userId], references: [id])
+}
+
+enum RoomType {
+  DM
+  CHANNEL
 }

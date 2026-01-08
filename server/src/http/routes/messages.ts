@@ -1,8 +1,8 @@
 import { Router } from "express";
+import { createOrGetDM } from "../controllers/message.controller.js";
 
+const router =  Router();
 
-const router = Router();
-
-router.get('/')
-
-export default router;
+router.route('/dm')
+    .get()
+    .post(createOrGetDM)
