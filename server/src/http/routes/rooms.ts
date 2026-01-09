@@ -1,14 +1,17 @@
 import { Router } from "express";
-import { createOrGetRoom, getRoomMessages, getUserRooms } from "../controllers/rooms.controller.js";
+import { createRoom,  getRoomDetails,  getUserRooms, joinRoom, leaveRoom } from "../controllers/rooms.controller.js";
 
 
 const router = Router();
 
 router.route('/')
-    .post(createOrGetRoom)
+    .post(createRoom)
     .get(getUserRooms)
 
-router.get('/:roomId/messages', getRoomMessages)
+router.route('/:roomId')
+    .get(getRoomDetails)
+    .post(joinRoom)
+    .delete(leaveRoom)
 
 
 export default router;

@@ -47,6 +47,7 @@ export const createRoom = async (
   }
 }
 
+// POST /api/rooms/:roomId
 export const joinRoom = async(
   req: Request<{ roomId: string}>,
   res: Response
@@ -72,6 +73,26 @@ export const joinRoom = async(
     console.log(error)
     return res.status(500).json({error: "Internal server error."})
   }
+}
+
+// DELETE /api/rooms/:roomId
+export const leaveRoom =async (
+  req: Request<{roomId: string}>,
+  res: Response
+) => {
+  const userId = req.userId;
+  const {roomId} = req.params;
+
+  if(!userId ) return res.status(400).json({error: "Unauthorized"});
+
+  await prisma.roomMember.deleteMany({
+    where:{
+      roomId, 
+      userId
+    }
+  })
+
+  res.status(204).send();
 }
 
 //GET api/rooms
@@ -100,28 +121,37 @@ export const getUserRooms = async (req: Request, res: Response) => {
   res.json(rooms);
 };
 
-
-
-//GET /api/rooms/:roomId/messages
-export const getRoomMessages = async (req: Request, res: Response) => {
+//GET api/rooms/:roomId
+export const getRoomDetails = async (
+  req: Request,
+  res: Response
+) => {
   const userId = req.userId;
   const { roomId } = req.params;
 
-  // 1. Validate membership
-  const isMember = await prisma.roomMember.findFirst({
-    where: { roomId, userId }
+  const room = await prisma.room.findFirst({
+    where:{
+      type: 'CHANNEL',
+      id: roomId,
+      members: {some: {userId}}
+    }, 
+    include:{
+      members:{
+        include:{
+          user:{
+            select:{id:true, username:true}
+          }
+        }
+      }
+    }
   });
 
-  if (!isMember) {
-    return res.status(403).json({ error: "Not a room member" });
+  if(!room) {
+    return res.status(404).json({error: "Room not found or access denied"})
   }
 
-  // 2. Fetch messages
-  const messages = await prisma.message.findMany({
-    where: { roomId },
-    orderBy: { createdAt: "asc" },
-    take: 50 // pagination later
-  });
+  res.json(room);
+}
 
-  res.json(messages);
-};
+
+
