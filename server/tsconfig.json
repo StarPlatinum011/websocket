@@ -8,6 +8,7 @@
     "rootDir": ".",
     "esModuleInterop": true,           /* Crucial for resolving CJS/Express imports */
     "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
