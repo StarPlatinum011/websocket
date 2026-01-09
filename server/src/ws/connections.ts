@@ -1,5 +1,5 @@
 import { validateSession } from "../utils/session.js";
-import { sessionsMap, socketToRooms, usersMap } from "./state.js";
+import { sessionsMap, usersMap } from "./state.js";
 import { Request } from "express";
 import { handleMessage } from "./handlers/message.js";
 import { AuthenticatedWS } from "./types/types.js";
