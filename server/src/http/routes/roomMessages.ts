@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getRoomMessages } from "../controllers/message.controller.js";
+import { getRoomMessages } from "../controllers/roomMessage.controller.js";
 
 
 const router = Router({mergeParams: true});

@@ -76,7 +76,29 @@ export const getUserDMs = async (req: Request, res: Response) => {
   res.json(dm);
 }
 
+// Implement soft delete
+export const deleteDM = async (
+  req: Request,
+  res: Response
+) => {
+  const userId = req.userId;
+  const {roomId} = req.params;
 
+  if (!userId || !roomId ) {
+    return res.status(400).json({error: "Missing Information."})
+  }
+
+  await prisma.roomMember.delete({
+    where:{
+      roomId_userId: {
+        roomId,
+        userId
+      }    
+    },
+  });
+
+  res.status(201).json({message: "You have left the chat."});
+}
 
 
 
