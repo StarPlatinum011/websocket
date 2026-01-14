@@ -24,6 +24,6 @@ export const  handleSendMessage = async (
     broadcastToRoom(payload.roomId, {
         type: "NEW_MESSAGE",
         payload: message
-    })
+    });
 
 }

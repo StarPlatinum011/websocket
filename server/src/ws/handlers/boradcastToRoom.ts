@@ -11,7 +11,7 @@ export const broadcastToRoom = (
     message: WSMessage 
 ) => {
 
-    //check if user is in the memory
+    //check if user is in the room-memory
     const room = roomsMap.get(roomId)
     if(!room) throw new Error("User is not allowed in the room.");
 

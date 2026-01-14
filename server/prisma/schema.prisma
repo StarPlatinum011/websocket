@@ -24,12 +24,13 @@ model User {
 }
 
 model Room {
-  id          String       @id @default(uuid())
-  name        String?
-  isPrivate   Boolean      @default(false)
-  createdAt   DateTime     @default(now())
-  type        RoomType
-  memberHash  String?       @unique
+  id              String       @id @default(uuid())
+  name            String?
+  isPrivate       Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  lastMessageAt   DateTime     @default(now())
+  type            RoomType
+  memberHash      String?      @unique
 
   members     RoomMember[]
   messages    Message[]
@@ -39,6 +40,7 @@ model RoomMember {
   id          String       @id @default(uuid())
   userId      String
   roomId      String 
+  lastSeenAt  DateTime     @default(now())
 
   user  User @relation(fields: [userId], references: [id])
   room  Room @relation(fields: [roomId], references: [id])

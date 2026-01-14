@@ -49,5 +49,4 @@ export const attachSocketToRoom = (
         socketToRooms.set(ws, new Set());
     }
     socketToRooms.get(ws)?.add(roomId);
-
 }
