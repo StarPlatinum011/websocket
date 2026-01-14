@@ -7,17 +7,7 @@ export const handleJoinRoom =(
     ws: AuthenticatedWS
 )=> {
 
-    if(!roomsMap.has(roomId)) {
-        roomsMap.set(roomId, new Set())
-    }
 
-    roomsMap.get(roomId)?.add(ws);
-
-    if(!socketToRooms.has(ws)) {
-        socketToRooms.set(ws, new Set());
-    }
-
-    socketToRooms.get(ws)?.add(roomId)
 
 }
 
@@ -32,4 +22,24 @@ export const handleLeaveRoom = (
 
 
     sockets.delete(ws);
+}
+
+// Logic to reconnect sockets on reconnections
+export const attachSocketToRoom = (
+    roomId: string,
+    ws: AuthenticatedWS
+) => {
+    const rooms = socketToRooms.get(ws);
+    if(rooms?.has(roomId)) return;
+
+    if (!roomsMap.has(roomId)) {
+        roomsMap.set(roomId, new Set());
+    }
+    roomsMap.get(roomId)?.add(ws);
+
+    if (!socketToRooms.has(ws)) {
+        socketToRooms.set(ws, new Set());
+    }
+    socketToRooms.get(ws)?.add(roomId);
+
 }

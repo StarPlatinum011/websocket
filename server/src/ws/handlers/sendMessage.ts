@@ -8,7 +8,7 @@ export const  handleSendMessage = async (
     payload: SendMessagePayload
 ) => {
 
-    //Authorization : Business rule to check if the action is valid
+    //Authorization : Business rule to check if the user exist in the room
     await assertRoomMembership(ws.userId, payload.roomId);
 
     //Database 
