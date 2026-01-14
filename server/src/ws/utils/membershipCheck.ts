@@ -3,7 +3,7 @@ import { prisma } from "../../db/prisma.js";
 export async function assertRoomMembership(
     userId: string,
     roomId: string
-) {
+): Promise<boolean>{
     const member = await prisma.roomMember.findFirst({
         where: {
             userId,
@@ -11,5 +11,5 @@ export async function assertRoomMembership(
         }
     });
 
-    if (!member) throw new Error("User is not a member of this room.")
+    return !!member;
 }

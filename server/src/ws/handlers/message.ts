@@ -22,15 +22,13 @@ export const handleMessage = async (ws: AuthenticatedWS, data: RawData) => {
             break;
 
         case "JOIN_ROOM":
-          handleJoinRoom(parsed.data.payload.roomId, ws);
+          await handleJoinRoom(parsed.data.payload.roomId, ws);
           break;
         
         case "LEAVE_ROOM":
           handleLeaveRoom(parsed.data.payload.roomId, ws);
           break;
         
-        
-
     }
 }
 

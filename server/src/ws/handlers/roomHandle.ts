@@ -1,14 +1,22 @@
 import { roomsMap, socketToRooms } from "../state.js";
 import { AuthenticatedWS } from "../types/types.js";
+import { assertRoomMembership } from "../utils/membershipCheck.js";
 
 
-export const handleJoinRoom =(
+export const handleJoinRoom = async(
     roomId: string,
     ws: AuthenticatedWS
-)=> {
-
-
-
+) => {
+    try {
+    await assertRoomMembership(ws.userId, roomId);
+    attachSocketToRoom(roomId, ws);
+  } catch {
+    ws.send(JSON.stringify({
+      type: "ERROR",
+      code: "NOT_A_MEMBER",
+      roomId
+    }));
+  }
 }
 
 export const handleLeaveRoom = (
