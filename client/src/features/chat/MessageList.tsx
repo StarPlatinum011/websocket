@@ -1,8 +1,14 @@
-import { useEffect } from "react";
-import { MessageBubble } from "./MessageBubble";
 
-export const MessagesList = ({ messages }) => {
-  const messagesEndRef = useRef(null);
+import { useEffect, useRef } from "react";
+import { MessageBubble } from "./MessageBubble";
+import { Message } from "../../types/chat.types";
+
+interface MessagesListProps {
+  messages: Message[];
+}
+
+export const MessagesList:React.FC<MessagesListProps> = ({ messages }) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

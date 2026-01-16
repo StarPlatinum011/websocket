@@ -1,7 +1,16 @@
+import { Message, Room } from "../../types/chat.types";
+import { ChatHeader } from "./ChatHeader";
+import { EmptyState } from "./EmptyState";
 import { MessageInput } from "./MessageInput";
 import { MessagesList } from "./MessageList";
 
-export const ChatArea = ({ selectedRoom, messages, onSendMessage }) => {
+interface ChatAreaProps {
+  selectedRoom: Room | null;
+  messages: Message[];
+  onSendMessage: (content: string) => void;
+}
+
+export const ChatArea: React.FC<ChatAreaProps> = ({ selectedRoom, messages, onSendMessage }) => {
   if (!selectedRoom) {
     return <EmptyState />;
   }

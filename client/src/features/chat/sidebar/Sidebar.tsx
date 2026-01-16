@@ -1,7 +1,17 @@
 import { Search } from "lucide-react";
+import { RoomListItem } from "./RoomListItem";
+import { Room } from "../../../types/chat.types";
+import { useState } from "react";
+import { ConnectionStatus } from "./ConnectionStatus";
 
+interface SidebarProps {
+  rooms: Room[];
+  selectedRoom: Room | null;
+  onRoomSelect: (room: Room) => void;
+  wsStatus: 'connected' | 'disconnected';
+}
 
-export const Sidebar = ({ rooms, selectedRoom, onRoomSelect, wsStatus }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ rooms, selectedRoom, onRoomSelect, wsStatus }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredRooms = rooms.filter(room =>

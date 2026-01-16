@@ -1,10 +1,15 @@
 import { Paperclip, Send, Smile } from "lucide-react";
 import { useState } from "react";
 
-export const MessageInput = ({ onSendMessage }) => {
+
+interface MessageInputProps {
+  onSendMessage: (content: string) => void;
+}
+
+export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
   const [input, setInput] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim()) {
       onSendMessage(input);
@@ -12,7 +17,7 @@ export const MessageInput = ({ onSendMessage }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
@@ -32,7 +37,7 @@ export const MessageInput = ({ onSendMessage }) => {
           type="button"
           className="p-2 text-gray-600 hover:bg-gray-100 rounded-full mb-1"
         >
-          <Image className="h-5 w-5" />
+          {/* <Image className="h-5 w-5" /> */}
         </button>
         <div className="flex-1 bg-gray-100 rounded-3xl px-4 py-2">
           <input

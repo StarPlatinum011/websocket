@@ -1,5 +1,11 @@
-export const MessageBubble = ({ message }) => {
-  const formatTime = (timestamp) => {
+import { Message } from "../../types/chat.types";
+
+interface MessageBubbleProps {
+  message: Message;
+}
+
+export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+  const formatTime = (timestamp:string): string => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   };

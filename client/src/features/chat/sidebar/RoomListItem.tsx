@@ -1,5 +1,13 @@
+import { Room } from "../../../types/chat.types";
 
-export const RoomListItem = ({ room, isSelected, onClick }) => (
+
+interface RoomListItemProps {
+  room: Room;
+  isSelected: boolean;
+  onClick: () => void;
+}
+
+export const RoomListItem: React.FC<RoomListItemProps> = ({ room, isSelected, onClick }) => (
   <div
     onClick={onClick}
     className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition ${

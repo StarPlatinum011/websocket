@@ -1,21 +1,22 @@
 import { useState } from "react";
 import { useWebSocket } from "../hooks/useWebSockets";
-import { Sidebar } from "../features/rooms/sidebar";
 import { ChatArea } from "../features/chat/ChatArea";
+import { Message, Room } from "../types/chat.types";
+import { Sidebar } from "../features/chat/sidebar/Sidebar";
 
-const MessengerUI = () => {
+const MessengerUI: React.FC = () => {
   const [rooms, setRooms] = useState([
     { id: '1', name: 'Team Chat', lastMessage: 'See you tomorrow!', timestamp: '2m ago', unread: 2 },
     { id: '2', name: 'Project Alpha', lastMessage: 'Updated the docs', timestamp: '1h ago', unread: 0 },
     { id: '3', name: 'Sarah Wilson', lastMessage: 'Thanks for the help!', timestamp: '3h ago', unread: 1 },
   ]);
   
-  const [selectedRoom, setSelectedRoom] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const { wsStatus, sendMessage } = useWebSocket('ws://localhost:3000', 'your-token');
 
   // Demo messages data
-  const demoMessages = {
+  const demoMessages: Record<string, Message[]> = {
     '1': [
       { id: 'm1', userId: '2', userName: 'John Doe', content: 'Hey everyone!', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
       { id: 'm2', userId: 'me', userName: 'You', content: 'Hi John!', timestamp: new Date(Date.now() - 3000000).toISOString(), isMine: true },
@@ -31,7 +32,7 @@ const MessengerUI = () => {
     ],
   };
 
-  const handleRoomSelect = (room) => {
+  const handleRoomSelect = (room: Room) => {
     setSelectedRoom(room);
     setMessages(demoMessages[room.id] || []);
     
@@ -44,7 +45,7 @@ const MessengerUI = () => {
     ));
   };
 
-  const handleSendMessage = (content) => {
+  const handleSendMessage = (content: string) => {
     if (!selectedRoom) return;
 
     const newMessage = {

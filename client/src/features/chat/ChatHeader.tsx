@@ -1,6 +1,12 @@
 import { ArrowLeft, MoreVertical, Users } from "lucide-react";
+import { Room } from "../../types/chat.types";
 
-const ChatHeader = ({ room }) => (
+
+interface ChatHeaderProps {
+  room: Room;
+}
+
+export const ChatHeader: React.FC<ChatHeaderProps> = ({ room }) => (
   <div className="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
     <div className="flex items-center">
       <button className="lg:hidden mr-3 text-gray-600 hover:text-gray-900">

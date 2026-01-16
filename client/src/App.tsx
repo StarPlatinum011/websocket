@@ -1,10 +1,10 @@
-import WebSocketClient from './components/WebSocketClient'
+import MessengerUI from './pages/MessengerUI'
 import './style.css'
 function App() {
 
   return (
     <>
-      <WebSocketClient/>
+      <MessengerUI />
     </>
   )
 }
