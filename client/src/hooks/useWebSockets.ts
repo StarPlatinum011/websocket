@@ -3,12 +3,12 @@ import { WebSocketMessage } from "../types/chat.types";
 
 
 export const useWebSocket = (url: string, token: string) => {
-  const [wsStatus, setWsStatus] = useState<'connected' | 'disconnected'>('disconnected');
+  const [wsStatus, setWsStatus] = useState<'Online' | 'Offline'>('Offline');
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     // In production: ws.current = new WebSocket(`${url}?token=${token}`);
-    setWsStatus('connected');
+    setWsStatus('Online');
 
     const currentWs = ws.current;
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWebSocket } from "../hooks/useWebSockets";
 import { ChatArea } from "../features/chat/ChatArea";
 import { Message, Room } from "../types/chat.types";
@@ -13,6 +13,9 @@ const MessengerUI: React.FC = () => {
   
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Call custon hook
   const { wsStatus, sendMessage } = useWebSocket('ws://localhost:3000', 'your-token');
 
   // Demo messages data
@@ -32,12 +35,20 @@ const MessengerUI: React.FC = () => {
     ],
   };
 
+  useEffect(()=> {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleRoomSelect = (room: Room) => {
     setSelectedRoom(room);
     setMessages(demoMessages[room.id] || []);
     
     // Send join_room event
-    sendMessage({ type: 'join_room', roomId: room.id });
+    sendMessage({ type: 'JOIN_ROOM', roomId: room.id });
     
     // Clear unread count
     setRooms(prev => prev.map(r => 
@@ -59,7 +70,7 @@ const MessengerUI: React.FC = () => {
 
     // Send via WebSocket
     sendMessage({ 
-      type: 'send_message', 
+      type: 'SEND_MESSAGE', 
       roomId: selectedRoom.id, 
       content 
     });
@@ -74,19 +85,48 @@ const MessengerUI: React.FC = () => {
     ));
   };
 
+  //On back button pressed
+  const handleBackToRooms = () => {
+    setSelectedRoom(null)
+  }
+
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar
-        rooms={rooms}
-        selectedRoom={selectedRoom}
-        onRoomSelect={handleRoomSelect}
-        wsStatus={wsStatus}
-      />
-      <ChatArea
-        selectedRoom={selectedRoom}
-        messages={messages}
-        onSendMessage={handleSendMessage}
-      />
+    <div className=" h-screen bg-gray-100 flex">
+      {isMobile? (
+        // Remder Mobile view with selectedRoom condition
+        <> 
+          {!selectedRoom? (
+            <Sidebar
+              rooms={rooms}
+              selectedRoom={selectedRoom}
+              onRoomSelect={handleRoomSelect}
+              wsStatus={wsStatus}
+            />
+          ) : (
+            <ChatArea
+              selectedRoom={selectedRoom}
+              messages={messages}
+              onSendMessage={handleSendMessage}
+              onBack ={handleBackToRooms}
+            />
+          )}
+        </>
+      ) : (
+         //Render Desktop view
+        <>
+          <Sidebar
+            rooms={rooms}
+            selectedRoom={selectedRoom}
+            onRoomSelect={handleRoomSelect}
+            wsStatus={wsStatus}
+          />
+          <ChatArea
+            selectedRoom={selectedRoom}
+            messages={messages}
+            onSendMessage={handleSendMessage}
+          />
+        </>
+      )}
     </div>
   );
 };

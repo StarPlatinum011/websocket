@@ -8,7 +8,7 @@ interface SidebarProps {
   rooms: Room[];
   selectedRoom: Room | null;
   onRoomSelect: (room: Room) => void;
-  wsStatus: 'connected' | 'disconnected';
+  wsStatus: 'Online' | 'Offline';
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ rooms, selectedRoom, onRoomSelect, wsStatus }) => {
@@ -19,14 +19,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ rooms, selectedRoom, onRoomSel
   );
 
   return (
-    <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+    <div className="lg:w-80 bg-white lg:border-r w-full border-gray-200 flex flex-col">
       <div className="p-4 border-b border-gray-200">
-        <h1 className="text-2xl font-bold text-gray-800 mb-3">Messages</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-3">Enigma</h1>
         <div className="relative">
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Search conversations..."
+            placeholder="Search..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"

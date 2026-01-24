@@ -17,7 +17,7 @@ export interface Message {
 }
 
 export interface WebSocketMessage {
-  type: 'send_message' | 'join_room' | 'leave_room';
+  type: 'SEND_MESSAGE' | 'JOIN_ROOM' | 'LEVAE_ROOM';
   roomId?: string;
   content?: string;
 }
