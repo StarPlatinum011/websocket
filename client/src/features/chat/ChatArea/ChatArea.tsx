@@ -1,4 +1,4 @@
-import { Message, Room } from "../../types/chat.types";
+import { Message, Room } from "../../../types/chat.types";
 import { ChatHeader } from "./ChatHeader";
 import { EmptyState } from "./EmptyState";
 import { MessageInput } from "./MessageInput";

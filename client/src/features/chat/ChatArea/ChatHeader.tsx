@@ -1,5 +1,5 @@
 import { ArrowLeft, MoreVertical, Users } from "lucide-react";
-import { Room } from "../../types/chat.types";
+import { Room } from "../../../types/chat.types";
 
 
 interface ChatHeaderProps {
