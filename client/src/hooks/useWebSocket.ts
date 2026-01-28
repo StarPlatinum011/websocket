@@ -26,7 +26,7 @@ export const useWebSocket = (url: string, token: string) => {
 
     //Connection close
     ws.current.onclose = () => {
-      console.log('🔴 WebSocket disconnected');
+      console.log(' WebSocket disconnected');
       setWsStatus('Offline');
     }
 
@@ -36,7 +36,7 @@ export const useWebSocket = (url: string, token: string) => {
       console.log('Data: ', data)
 
       switch (data.type) {
-        case "new_message":
+        case "NEW_MESSAGE":
           addMessage(data.roomId, {
             id: data.messageId,
             userId: data.userId,
@@ -47,11 +47,11 @@ export const useWebSocket = (url: string, token: string) => {
           });
           break;
 
-        case "room_list":
+        case "ROOM_LIST":
           setRooms(data.rooms);
           break;
 
-        case "user_joined":
+        case "JOIN_ROOM":
           console.log(`${data.userName} joined ${data.roomId}`);
           break;
       }

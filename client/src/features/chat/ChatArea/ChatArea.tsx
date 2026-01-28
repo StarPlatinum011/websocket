@@ -1,10 +1,10 @@
+import { useEffect } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { useChatStore } from "../../../store/useChatStore";
 import { ChatHeader } from "./ChatHeader";
 import { EmptyState } from "./EmptyState";
 import { MessageInput } from "./MessageInput";
 import { MessagesList } from "./MessageList";
-import { useWebSocket } from "../../../hooks/useWebSocket";
 
 interface ChatAreaProps {
   onBack?: () => void;
@@ -18,14 +18,27 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
   const messages = useChatStore((state) => state.messages);
   const addMessage = useChatStore((state) => state.addMessage);
   const updateRoomLastMessage = useChatStore((state) => state.updateRoomLastMessage);
+  const wsSend = useChatStore((state) => state.wsSend)
 
-  const { sendMessage } = useWebSocket('localhost://3000', 'my-token')
-  //Why cant we use selectedRoomId from chatStore? rooms.find looks like db query how? 
   //find selected room from rooms array
   const selectedRoom = rooms.find(r => r.id === roomId);
 
   //get the messages for this room
   const roomMessages = roomId? messages[roomId] || [] : [];
+
+  //Join room when component mounts
+  useEffect(()=> {
+    if(roomId && wsSend) {
+      wsSend({ type: "JOIN_ROOM", roomId});
+    }
+
+    return() => {
+      if(roomId && wsSend) {
+        wsSend({type: "LEVAE_ROOM", roomId})
+      }
+    }
+  }, [roomId, wsSend])
+
 
   if (!roomId) {
     return <EmptyState />;
@@ -36,8 +49,9 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
     return <Navigate to="/404" replace />
   }
 
+
   const handleMessageSend = (content: string) => {
-    if(!roomId) return;
+    if(!roomId || !wsSend) return;
 
     const newMessage = {
       id: `m${Date.now()}`,
@@ -48,13 +62,15 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
       isMine: true
     }
 
+    //update UI asap
     addMessage(roomId, newMessage);
     updateRoomLastMessage( roomId, content);
 
-    sendMessage({
+    //send data to server
+    wsSend({
       type: 'SEND_MESSAGE', 
-      roomId: roomId, 
-      content: content
+      roomId, 
+      content
     });
 
   }

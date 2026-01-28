@@ -8,7 +8,7 @@ interface ChatState {
     messages: Record<string, Message[]>;
     selectedRoomId: string | null;
     wsStatus: 'Online' | 'Offline';
-     wsSend: ((data: WebSocketMessage) => void) | null;
+    wsSend: ((data: WebSocketMessage) => void) | null; //storing function as a state
 
     // Actions
     setRooms: (rooms: Room[]) => void;

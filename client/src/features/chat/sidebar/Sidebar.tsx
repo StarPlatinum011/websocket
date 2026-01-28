@@ -13,7 +13,8 @@ export const Sidebar = () => {
   const wsStatus = useChatStore((state) => state.wsStatus)
   const selectedRoomId = useChatStore((state)=> state.selectedRoomId)
   const selectRoom = useChatStore((state) => state.selectRoom)
-  const clearUnread = useChatStore((state) => state.clearUnread)
+  const clearUnread = useChatStore((state) => state.clearUnread);
+  const wsSend = useChatStore((state)=> state.wsSend);
 
   const navigate = useNavigate()
   const filteredRooms = rooms.filter(room =>
@@ -24,6 +25,10 @@ export const Sidebar = () => {
   const handleRoomSelect = (room: Room) => {
     selectRoom(room.id);
     clearUnread(room.id);
+    
+    if(wsSend) {
+      wsSend({type: "JOIN_ROOM", roomId:room.id})
+    }
     navigate(`/room/${room.id}`);
 
 
