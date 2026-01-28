@@ -4,6 +4,8 @@ import { Request } from "express";
 import { handleMessage } from "./handlers/message.js";
 import { AuthenticatedWS } from "./types/types.js";
 import { handleDisconnection } from "./utils/disconnection.js";
+import { prisma } from "../db/prisma.js";
+import { attachSocketToRoom } from "./handlers/roomHandle.js";
 
 export function handleConnection(ws: AuthenticatedWS, req: Request) {
     void(async()=> {
@@ -32,6 +34,17 @@ export function handleConnection(ws: AuthenticatedWS, req: Request) {
     
             ws.send(JSON.stringify({ message: "Authenticated." }));
 
+            // Reconnect the rooms on refresh
+            const rooms = await prisma.room.findMany({
+                where:{
+                    members:{ some: {userId: ws.userId}}
+                }
+            });
+            
+            for( const room of rooms) {
+                attachSocketToRoom(room.id, ws);
+            }
+
             // Handle messaging 
             ws.on('message',  (data) => {
                 void handleMessage(ws, data)
@@ -46,7 +59,6 @@ export function handleConnection(ws: AuthenticatedWS, req: Request) {
                 }
                 
                 handleDisconnection(ws);
-                
             })
         } catch (err) {
             ws.close(4003, (err as Error).message)
