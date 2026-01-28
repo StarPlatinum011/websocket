@@ -33,7 +33,8 @@ export const Sidebar = () => {
 
 
   }
-
+  
+  console.log("ConnectionStatus: ", wsStatus);
   return (
     <div className="lg:w-80 bg-white lg:border-r w-full border-gray-200 flex flex-col">
       <div className="p-4 border-b border-gray-200">
@@ -49,6 +50,7 @@ export const Sidebar = () => {
           />
         </div>
       </div>
+
 
       <ConnectionStatus status={wsStatus} />
 

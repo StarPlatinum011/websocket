@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { WebSocketMessage } from "../types/chat.types";
+import { IncomingWebSocketMessage, OutgoingWebSocketMessage } from "../types/chat.types";
 import { useChatStore } from "../store/useChatStore";
 
 
@@ -32,28 +32,45 @@ export const useWebSocket = (url: string, token: string) => {
 
     // Receive message from server
     ws.current.onmessage = (e) => {
-      const data = JSON.parse(e.data);
+      const data: IncomingWebSocketMessage = JSON.parse(e.data);
       console.log('Data: ', data)
 
       switch (data.type) {
         case "NEW_MESSAGE":
-          addMessage(data.roomId, {
-            id: data.messageId,
-            userId: data.userId,
-            userName: data.userName,
-            content: data.content,
-            timestamp: data.timestamp,
-            isMine:false
-          });
+          if(data.roomId && data.messageId && data.content) {
+
+            addMessage(data.roomId, {
+              id: data.messageId,
+              userId: data.userId || "Unknown",
+              userName: data.userName || "Unknown User",
+              content: data.content,
+              timestamp: data.timestamp || new Date().toISOString(),
+              isMine:false
+            });
+          }
           break;
 
         case "ROOM_LIST":
-          setRooms(data.rooms);
+          if(data.rooms ) {
+            setRooms(data.rooms);
+          }
           break;
 
-        case "JOIN_ROOM":
+        case "USER_JOINED":
           console.log(`${data.userName} joined ${data.roomId}`);
           break;
+
+        case "USER_LEFT":
+          console.log(`User left room: ${data.roomId}`);
+          break;
+
+        case "ERROR":
+          console.log("Server Error: ", data.error);
+          break;
+
+        default:
+          console.log("Unknown message type: ", data);
+          
       }
 
     }
@@ -72,7 +89,7 @@ export const useWebSocket = (url: string, token: string) => {
   }, [url, token, setWsStatus, addMessage, setRooms]);
 
 
-  const sendMessage = (data: WebSocketMessage) => {
+  const sendMessage = (data: OutgoingWebSocketMessage) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify(data));
     } else {
@@ -80,5 +97,5 @@ export const useWebSocket = (url: string, token: string) => {
     }
   };
 
-  return {sendMessage, wsStatus: ws.current?.readyState === WebSocket.OPEN ? 'Online' : 'Offline'};
+  return {sendMessage};
 };
