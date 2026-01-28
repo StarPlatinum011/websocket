@@ -4,6 +4,7 @@ import { ChatHeader } from "./ChatHeader";
 import { EmptyState } from "./EmptyState";
 import { MessageInput } from "./MessageInput";
 import { MessagesList } from "./MessageList";
+import { useWebSocket } from "../../../hooks/useWebSocket";
 
 interface ChatAreaProps {
   onBack?: () => void;
@@ -18,6 +19,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
   const addMessage = useChatStore((state) => state.addMessage);
   const updateRoomLastMessage = useChatStore((state) => state.updateRoomLastMessage);
 
+  const { sendMessage } = useWebSocket('localhost://3000', 'my-token')
   //Why cant we use selectedRoomId from chatStore? rooms.find looks like db query how? 
   //find selected room from rooms array
   const selectedRoom = rooms.find(r => r.id === roomId);
@@ -48,6 +50,12 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
 
     addMessage(roomId, newMessage);
     updateRoomLastMessage( roomId, content);
+
+    sendMessage({
+      type: 'SEND_MESSAGE', 
+      roomId: roomId, 
+      content: content
+    });
 
   }
 

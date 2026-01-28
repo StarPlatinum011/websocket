@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Message, Room } from "../types/chat.types";
+import { Message, Room, WebSocketMessage } from '../types/chat.types';
 
 
 interface ChatState {
@@ -8,6 +8,7 @@ interface ChatState {
     messages: Record<string, Message[]>;
     selectedRoomId: string | null;
     wsStatus: 'Online' | 'Offline';
+     wsSend: ((data: WebSocketMessage) => void) | null;
 
     // Actions
     setRooms: (rooms: Room[]) => void;
@@ -16,7 +17,9 @@ interface ChatState {
     selectRoom: (roomId: string | null) => void;
     setWsStatus: (status: 'Online' | 'Offline') => void;
     updateRoomLastMessage: (roomId: string, content: string) => void;
-    clearUnread: (roomId: string) => void
+    clearUnread: (roomId: string) => void;
+    setWsSend: (sender: (data: WebSocketMessage) => void) => void;
+
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -44,6 +47,7 @@ export const useChatStore = create<ChatState>((set) => ({
   },
   selectedRoomId: null,
   wsStatus: 'Offline',
+  wsSend: null,
 
   // Actions
   setRooms: (rooms) => set({ rooms }),
@@ -101,5 +105,5 @@ export const useChatStore = create<ChatState>((set) => ({
       return { rooms: updatedRooms }
     }),
 
-    
-}))
+    setWsSend: (sender) => set({wsSend: sender})
+}));

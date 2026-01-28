@@ -16,7 +16,6 @@ export const Sidebar = () => {
   const clearUnread = useChatStore((state) => state.clearUnread)
 
   const navigate = useNavigate()
-
   const filteredRooms = rooms.filter(room =>
     room.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -26,6 +25,8 @@ export const Sidebar = () => {
     selectRoom(room.id);
     clearUnread(room.id);
     navigate(`/room/${room.id}`);
+
+
   }
 
   return (
