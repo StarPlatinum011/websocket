@@ -1,22 +1,32 @@
 import { Search } from "lucide-react";
 import { RoomListItem } from "./RoomListItem";
-import { Room } from "../../../types/chat.types";
 import { useState } from "react";
 import { ConnectionStatus } from "./ConnectionStatus";
+import { useChatStore } from "../../../store/useChatStore";
+import { Room } from "../../../types/chat.types";
+import { useNavigate } from "react-router-dom";
 
-interface SidebarProps {
-  rooms: Room[];
-  selectedRoom: Room | null;
-  onRoomSelect: (room: Room) => void;
-  wsStatus: 'Online' | 'Offline';
-}
 
-export const Sidebar: React.FC<SidebarProps> = ({ rooms, selectedRoom, onRoomSelect, wsStatus }) => {
+export const Sidebar = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const rooms = useChatStore((state) => state.rooms);
+  const wsStatus = useChatStore((state) => state.wsStatus)
+  const selectedRoomId = useChatStore((state)=> state.selectedRoomId)
+  const selectRoom = useChatStore((state) => state.selectRoom)
+  const clearUnread = useChatStore((state) => state.clearUnread)
+
+  const navigate = useNavigate()
 
   const filteredRooms = rooms.filter(room =>
     room.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  //Handle room selection
+  const handleRoomSelect = (room: Room) => {
+    selectRoom(room.id);
+    clearUnread(room.id);
+    navigate(`/room/${room.id}`);
+  }
 
   return (
     <div className="lg:w-80 bg-white lg:border-r w-full border-gray-200 flex flex-col">
@@ -41,8 +51,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ rooms, selectedRoom, onRoomSel
           <RoomListItem
             key={room.id}
             room={room}
-            isSelected={selectedRoom?.id === room.id}
-            onClick={() => onRoomSelect(room)}
+            isSelected={selectedRoomId === room.id}
+            onClick={() => handleRoomSelect(room)}
           />
         ))}
       </div>

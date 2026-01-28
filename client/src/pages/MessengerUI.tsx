@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { ChatArea } from "../features/chat/ChatArea/ChatArea";
 import { Sidebar } from "../features/chat/sidebar/Sidebar";
 import { useChatStore } from "../store/useChatStore";
+import { useNavigate } from "react-router-dom";
 
 const MessengerUI: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
-  const selectedRoom = useChatStore((state) => state.selectedRoomId)
+  const navigate = useNavigate();
+
+  const selectedRoomId = useChatStore((state) => state.selectedRoomId)
   const setRoomSelect = useChatStore((state) => state.selectRoom)
 
   useEffect(()=> {
@@ -19,7 +22,8 @@ const MessengerUI: React.FC = () => {
 
   //On back button pressed
   const handleBackToRooms = () => {
-    setRoomSelect(null)
+    setRoomSelect(null);
+    navigate('/');
   }
 
   return (
@@ -27,12 +31,10 @@ const MessengerUI: React.FC = () => {
       {isMobile? (
         // Remder Mobile view with selectedRoom condition
         <> 
-          {!selectedRoom? (
+          {!selectedRoomId? (
             <Sidebar />
           ) : (
-            <ChatArea
-              onBack ={handleBackToRooms}
-            />
+            <ChatArea onBack ={handleBackToRooms}/>
           )}
         </>
       ) : (
