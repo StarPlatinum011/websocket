@@ -1,17 +1,24 @@
 import { useEffect, useRef } from "react";
 import { IncomingWebSocketMessage, OutgoingWebSocketMessage } from "../types/chat.types";
 import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 
 export const useWebSocket = (url: string, token: string) => {
 
   const ws = useRef<WebSocket | null>(null);
+  const logout = useAuthStore((state)=> state.logout );
 
   const setWsStatus = useChatStore((state) => state.setWsStatus);
   const addMessage = useChatStore((state) => state.addMessage);
   const setRooms = useChatStore((state) => state.setRooms)
 
   useEffect(() => {
+
+    if(!token) {
+      console.log("No token, skipping WebSocket connection");
+      return;
+    }
 
     console.log("Connecting to WebSocket...");
 
@@ -25,9 +32,15 @@ export const useWebSocket = (url: string, token: string) => {
     };
 
     //Connection close
-    ws.current.onclose = () => {
+    ws.current.onclose = (event) => {
       console.log(' WebSocket disconnected');
       setWsStatus('Offline');
+
+       // If closed due to auth error
+      if (event.code === 4001) {
+        console.error(' Authentication failed, logging out');
+        logout();  // Clear session and redirect to login
+      }
     }
 
     // Receive message from server
@@ -66,6 +79,10 @@ export const useWebSocket = (url: string, token: string) => {
 
         case "ERROR":
           console.log("Server Error: ", data.error);
+          //If error is auth related
+          if(data.error?.includes('session') || data.error?.includes('auth')) {
+            logout();
+          }
           break;
 
         default:
