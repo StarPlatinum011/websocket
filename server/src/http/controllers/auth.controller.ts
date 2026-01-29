@@ -80,7 +80,9 @@ export const loginUser = async (req: Request, res:Response) => {
 
         return res.status(200).json({
             message: 'Logged in successfully.',
-            sessionId: session.id
+            userId: user.id,
+            userName: user.username,
+            sessionToken: session.id
         })
         
         
