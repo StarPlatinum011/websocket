@@ -103,7 +103,7 @@ export const useWebSocket = (url: string, token: string) => {
         ws.current.close();
       }
     };
-  }, [url, token, setWsStatus, addMessage, setRooms]);
+  }, [url, token, setWsStatus, addMessage, setRooms, logout]);
 
 
   const sendMessage = (data: OutgoingWebSocketMessage) => {
