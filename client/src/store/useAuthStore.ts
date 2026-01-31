@@ -13,6 +13,7 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>()(
+    //persist used to store state in localstorage
     persist(
         (set) =>({
             token: null,

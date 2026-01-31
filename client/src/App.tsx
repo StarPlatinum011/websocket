@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { useAuthStore } from './store/useAuthStore';
 import LoginPage from './features/auth/LoginPage';
 import ProtectedRoute from './features/components/ProtectedRoute';
+import RegisterPage from './features/auth/RegisterPage';
 function App() {
   const token = useAuthStore((state)=> state.token);
   const isAuthenticated = useAuthStore((state)=> state.isAuthenticated);
@@ -27,6 +28,7 @@ function App() {
       <Routes>
           {/* Public routes */}
           <Route path='/login' element={<LoginPage/>}/>
+          <Route path='/register' element={<RegisterPage/>}/>
 
           {/* Protected Routes  */}
           <Route 
