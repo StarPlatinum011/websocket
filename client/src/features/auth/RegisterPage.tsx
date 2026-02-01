@@ -97,7 +97,7 @@ const RegisterPage: React.FC = () => {
       const data = await response.json();
 
       // Attach token and other state to store
-      login(data.sessionToken, data.userId, data.userName);
+      login(data.token, data.userId, data.userName);
       navigate('/');
       
     } catch (err) {

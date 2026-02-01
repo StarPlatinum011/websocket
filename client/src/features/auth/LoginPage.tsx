@@ -49,7 +49,7 @@ const LoginPage = () => {
       }
       
       if (!formData.password) {
-        newErrors.password = 'Password is required';
+        newErrors.password = 'Password required';
       }
 
       setErrors(newErrors);
@@ -76,7 +76,7 @@ const LoginPage = () => {
             const data = await response.json();
 
             // Store in auth store
-            login(data.sessionToken, data.userId, data.userName);
+            login(data.token, data.userId, data.userName);
 
             //Redirect to main page
             navigate('/');

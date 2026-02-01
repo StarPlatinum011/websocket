@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import { Request, Response } from "express";
 import { prisma } from "../../db/prisma.js"
 import { loginSchema, registerSchema } from '../schemas/user.schema.js';
-import { createSession, deleteSession } from '../../utils/session.js';
+import { createSession } from '../../utils/session.js';
 
 
 export const registerUser =  async (req: Request, res:Response) => {
@@ -37,10 +37,13 @@ export const registerUser =  async (req: Request, res:Response) => {
             }
         })
 
-
+        const session = await createSession(user.id);
+        
         return res.status(201).json({
             message: "User Registered successfully.",
-            user
+            token: session.token,
+            userName: user.username,
+            userId: session.userId
         })
     } catch (error) {
         console.error('Register error: ', error)
@@ -82,7 +85,7 @@ export const loginUser = async (req: Request, res:Response) => {
             message: 'Logged in successfully.',
             userId: user.id,
             userName: user.username,
-            sessionToken: session.id
+            token: session.token
         })
         
         
@@ -95,12 +98,16 @@ export const loginUser = async (req: Request, res:Response) => {
   
 }
 export const userLogout = async (req:Request, res:Response) => {
-    const sessionId = req.sessionId;
-    if(!sessionId) return res.status(400).json({error: "No sessions to logout."})
+    const token = req.headers.authorization?.replace('Bearer', '');
 
-    await deleteSession(sessionId)
+    if(token) return res.status(400).json({ error: "No token provided" });
+    try {
+        await prisma.session.delete({
+            where: {token}
+        });
 
-    res.status(204).send({
-        message: 'Logged out successfully.'
-    })
+        res.json({message: 'Logged out successfully'})
+    } catch (err) {
+        res.status(500).json({ error: "logout failed, ", err});
+    }
 }

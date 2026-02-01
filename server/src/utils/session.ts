@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import {prisma} from "../db/prisma.js"
 import { addHours } from "date-fns"
 import { sessionsMap } from "../ws/state.js";
@@ -6,11 +7,15 @@ const SESSION_TTL_HOURS = 24;
 
 //create a new session for a user 
 export async function createSession(userId: string) {
-    const expiresAt = addHours(new Date, SESSION_TTL_HOURS)
+    const expiresAt = addHours(new Date, SESSION_TTL_HOURS);
+    
+    //Create a complicated token
+    const token = crypto.randomBytes(32).toString('base64url');
 
     const session = await prisma.session.create({
         data: {
             userId,
+            token,
             expiresAt
         },
     })
@@ -19,10 +24,11 @@ export async function createSession(userId: string) {
 }
 
 //validate session token
-export async function validateSession(sessionId: string) {
+export async function validateSession(token: string) {
 
     const session = await prisma.session.findUnique({
-        where: {id: sessionId}
+        where: {token},
+        include: {user: true}
     });
 
     if(!session) throw new Error("Invalid session");
@@ -32,7 +38,7 @@ export async function validateSession(sessionId: string) {
         throw new Error("Session Expired!")
     }
 
-    return session
+    return session;
 }
 
 //remove expired sessions
