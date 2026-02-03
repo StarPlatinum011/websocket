@@ -4,14 +4,14 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 
 interface FormData {
-  userName: string;
+  name: string;
   email: string;
   password: string;
   confirmPassword: string;
 }
 
 interface FormErrors {
-  userName?: string;
+  name?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -20,7 +20,7 @@ interface FormErrors {
 
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    userName: '',
+    name: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -46,8 +46,8 @@ const RegisterPage: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
     
-    if (!formData.userName.trim()) {
-      newErrors.userName = 'Name is required';
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
     }
     
     if (!formData.email.trim()) {
@@ -78,12 +78,12 @@ const RegisterPage: React.FC = () => {
     setLoading(true);
     
     try {
-      const response = await fetch('localhost', {
+      const response = await fetch('http://localhost:3000/api/auth/register', {
         method: "POST",
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({
           email: formData.email,
-          userName: formData.userName,
+          username: formData.name,
           password: formData.password
         })
       });
@@ -142,16 +142,16 @@ const RegisterPage: React.FC = () => {
                 <input
                   type="text"
                   name="name"
-                  value={formData.userName}
+                  value={formData.name}
                   onChange={handleChange}
                   className={`w-full border ${
-                    errors.userName ? 'border-[#F7A072] focus:ring-[#F7A072]' : 'border-gray-300 focus:ring-[#00A7E1]'
+                    errors.name ? 'border-[#F7A072] focus:ring-[#F7A072]' : 'border-gray-300 focus:ring-[#00A7E1]'
                   } text-[#2D3436] rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 transition-all`}
                   placeholder="John Doe"
                 />
               </div>
-              {errors.userName && (
-                <p className="text-[#F7A072] text-xs mt-1">{errors.userName}</p>
+              {errors.name && (
+                <p className="text-[#F7A072] text-xs mt-1">{errors.name}</p>
               )}
             </div>
 
