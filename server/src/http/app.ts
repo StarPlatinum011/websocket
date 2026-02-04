@@ -1,4 +1,5 @@
 import "dotenv/config";
+import cors from 'cors';
 import express, { type Express, type Request, type Response } from "express";import auth from './routes/auth.js'
 // import cors from "cors";
 // import helmet from "helmet";
@@ -11,7 +12,13 @@ export const createHttpApp = ():Express => {
   const app:Express = express();
   
   // app.use(helmet()); // Sets various HTTP headers for security
-  // app.use(cors());   // Allows your frontend to talk to this API
+ // Allows your frontend to talk to this API
+  app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false // true only if using cookies
+}));
   app.use(express.json());
   
   app.use("/api/auth", auth);

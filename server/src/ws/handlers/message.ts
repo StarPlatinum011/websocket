@@ -28,7 +28,6 @@ export const handleMessage = async (ws: AuthenticatedWS, data: RawData) => {
         case "LEAVE_ROOM":
           handleLeaveRoom(parsed.data.payload.roomId, ws);
           break;
-        
     }
 }
 

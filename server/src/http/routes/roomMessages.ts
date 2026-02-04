@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { getRoomMessages } from "../controllers/roomMessage.controller.js";
+import { getRoomMessages, createRoomMessage } from "../controllers/roomMessage.controller.js";
 
 
 const router = Router({mergeParams: true});
 
 router.get('/',getRoomMessages)
-router.post('/',)
+router.post('/', createRoomMessage)
 
 export default router;

@@ -12,14 +12,14 @@ export const registerUser =  async (req: Request, res:Response) => {
         if(!parsed.success) {
             return res.status(400).json({errors: parsed.error})
         }
-        const { password, username } = parsed.data; 
+        const { password, username, email } = parsed.data; 
 
 
         // check db if username is taken
         const existingUser = await prisma.user.findUnique({
-            where: { username }
+            where: { email }
         });
-        if(existingUser) return res.status(409).json({error: "Username already taken"})
+        if(existingUser) return res.status(409).json({error: "This email is already registerd"})
 
         //Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -29,11 +29,13 @@ export const registerUser =  async (req: Request, res:Response) => {
             data: {
                 password: hashedPassword,
                 username,
+                email
             },
             select: {
                 createdAt: true,
                 id: true,
                 username: true,
+                email: true
             }
         })
 
@@ -56,15 +58,17 @@ export const registerUser =  async (req: Request, res:Response) => {
 export const loginUser = async (req: Request, res:Response) => {
     try {
 
+        // console.log("This is from frontend: ", req.body);
+        
         const parsed = loginSchema.safeParse(req.body)
         if(!parsed.success) {
             return res.status(400).json({errors: parsed.error})
         }
 
-        const {password, username } = parsed.data;
+        const {password, email } = parsed.data;
 
         const user = await prisma.user.findUnique({
-            where: {username}
+            where: {email}
         })
 
         if (!user) {
