@@ -1,10 +1,6 @@
 import "dotenv/config";
 import cors from 'cors';
 import express, { type Express, type Request, type Response } from "express";import auth from './routes/auth.js'
-// import cors from "cors";
-// import helmet from "helmet";
-// import users from './routes/users.js'
-import rooms from './routes/rooms.js'
 import dms from './routes/dm.js'
 import roomMessages from './routes/roomMessages.js'
 
@@ -22,8 +18,7 @@ export const createHttpApp = ():Express => {
   app.use(express.json());
   
   app.use("/api/auth", auth);
-  // app.use("/api/user", users)
-  app.use("/api/rooms", rooms)
+  // app.use("/api/rooms", rooms)
   app.use("/api/dms", dms)
   app.use('/api/rooms/:roomId/messages', roomMessages)
   

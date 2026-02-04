@@ -8,6 +8,7 @@ interface ChatState {
     messages: Record<string, Message[]>;
     selectedRoomId: string | null;
     wsStatus: 'Online' | 'Offline';
+    isJoinRoomModalOpen: boolean;
     wsSend: ((data: OutgoingWebSocketMessage) => void) | null; //storing function as a state
 
     // Actions
@@ -19,6 +20,8 @@ interface ChatState {
     updateRoomLastMessage: (roomId: string, content: string) => void;
     clearUnread: (roomId: string) => void;
     setWsSend: (sender: (data: OutgoingWebSocketMessage) => void) => void;
+    setJoinRoomModalOpen: (open: boolean) => void;
+    addRoom: (room: Room) => void;
 
 }
 
@@ -48,6 +51,7 @@ export const useChatStore = create<ChatState>((set) => ({
   selectedRoomId: null,
   wsStatus: 'Offline',
   wsSend: null,
+  isJoinRoomModalOpen: false,
 
   // Actions
   setRooms: (rooms) => set({ rooms }),
@@ -105,5 +109,12 @@ export const useChatStore = create<ChatState>((set) => ({
       return { rooms: updatedRooms }
     }),
 
-    setWsSend: (sender) => set({wsSend: sender})
+  setWsSend: (sender) => set({wsSend: sender}),
+
+  setJoinRoomModalOpen: (open) => set({isJoinRoomModalOpen: open}),
+  
+  addRoom:(room) =>
+    set((state) => ({
+      rooms: [...state.rooms, room]
+    }))
 }));

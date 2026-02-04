@@ -51,7 +51,7 @@ export const createRoom = async (
 export const joinRoom = async(
   req: Request<{ roomId: string}>,
   res: Response
-) => {
+  ) => {
 
   try {
     const userId = req.userId;

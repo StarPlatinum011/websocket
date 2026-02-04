@@ -50,7 +50,7 @@ export const createOrGetDM = async (
   return res.status(201).json(room);
 }
 
-//Get api/dms/ 
+//Get api/dms/
 export const getUserDMs = async (req: Request, res: Response) => {
   const userId = req.userId;
 

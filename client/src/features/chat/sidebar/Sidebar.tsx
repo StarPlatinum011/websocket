@@ -1,4 +1,4 @@
-import { LogOut, Search } from "lucide-react";
+import { LogOut, Plus, Search } from "lucide-react";
 import { RoomListItem } from "./RoomListItem";
 import { useState } from "react";
 import { ConnectionStatus } from "./ConnectionStatus";
@@ -10,6 +10,7 @@ import { useAuthStore } from "../../../store/useAuthStore";
 
 export const Sidebar = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  
   const rooms = useChatStore((state) => state.rooms);
   const wsStatus = useChatStore((state) => state.wsStatus)
   const selectedRoomId = useChatStore((state)=> state.selectedRoomId)
@@ -18,6 +19,7 @@ export const Sidebar = () => {
   const wsSend = useChatStore((state)=> state.wsSend);
   const logout = useAuthStore((state) => state.logout);
   // const userName = useAuthStore((state)=> state.userName)
+  const setJoinRoomModalOpen = useChatStore((state)=> state.setJoinRoomModalOpen)
 
   const navigate = useNavigate()
 
@@ -39,14 +41,22 @@ export const Sidebar = () => {
     }
     navigate(`/room/${room.id}`);
 
-
   }
   
   console.log("ConnectionStatus: ", wsStatus);
   return (
     <div className="lg:w-80 bg-white lg:border-r w-full border-gray-200 flex flex-col">
       <div className="p-4 border-b border-gray-200">
-        <h1 className="text-2xl font-bold text-gray-800 mb-3">Enigma</h1>
+        <div className="flex justify-between items-center mb-3">
+          <h1 className="text-2xl font-bold text-gray-800 ">Enigma</h1>
+          <button
+            className="bg-[#F7A072] rounded-3xl p-1 cursor-pointer"
+            onClick={()=> setJoinRoomModalOpen(true)}
+            title="Join Room"
+          >
+            <Plus className="h-5 w-5 text-white"/>
+          </button>
+        </div>
         <div className="relative">
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           <input

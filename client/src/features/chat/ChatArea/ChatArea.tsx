@@ -5,6 +5,7 @@ import { ChatHeader } from "./ChatHeader";
 import { EmptyState } from "./EmptyState";
 import { MessageInput } from "./MessageInput";
 import { MessagesList } from "./MessageList";
+import JoinRoomMOdal from "../sidebar/JoinRoomMOdal";
 
 interface ChatAreaProps {
   onBack?: () => void;
@@ -18,8 +19,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
   const messages = useChatStore((state) => state.messages);
   const addMessage = useChatStore((state) => state.addMessage);
   const updateRoomLastMessage = useChatStore((state) => state.updateRoomLastMessage);
-  const wsSend = useChatStore((state) => state.wsSend)
-
+  const wsSend = useChatStore((state) => state.wsSend);
+  
   //find selected room from rooms array
   const selectedRoom = rooms.find(r => r.id === roomId);
 
@@ -43,6 +44,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
   if (!roomId) {
     return <EmptyState />;
   }
+
 
   //If the selected room doesnt exists 
   if(!selectedRoom) {
