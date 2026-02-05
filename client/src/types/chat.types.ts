@@ -2,9 +2,16 @@
 export interface Room {
   id: string;
   name: string;
+  type: 'DM' | 'CHANNEL'
   lastMessage: string;
   timestamp: string;
   unread: number;
+  memberHash?: string,
+  otherUser?: {
+    id: string
+    name: string
+    email: string
+  }
 }
 
 export interface Message {

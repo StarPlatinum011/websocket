@@ -13,7 +13,7 @@ interface AvailableRoom {
   name: string;
   description: string;
   memberCount: number;
-  isPublic: boolean;
+  isPrivate: boolean;
 }
 
 
@@ -52,11 +52,11 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({onClose}) => {
     }
 
     // Room Join
-    const handleJoinRoom = async (room: AvailableRoom) => {
+    const handleStartDM = async (room: AvailableRoom) => {
       setJoining(room.id);
 
       try {
-        const response = await fetch(`http://localhost:3000/api/dms/${room.id}/join`, {
+        const response = await fetch(`http://localhost:3000/api/dms/create`, {
           method: 'POST',
           headers: {
             'Authorization' : `Bearer ${localStorage.getItem('token')}`,
@@ -66,26 +66,33 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({onClose}) => {
 
         if(!response.ok) throw new Error("Failed to join the room");
 
-        // const data = await response.json();
+        const data = await response.json();
 
         //Add the room in store
-        addRoom({
-          id: room.id,
-          name: room.name,
-          lastMessage: ' ',
-          timestamp: 'Just now',
-          unread: 0
-        });
+        if(data.isNew) {
+          addRoom({
+            id: data.room.id,
+            type: 'DM',
+            name: data.room.name,  // Other user's name
+            lastMessage: '',
+            timestamp: 'Just now',
+            unread: 0,
+            memberHash: data.room.memberHash,
+            otherUser: data.room.otherUser
+
+          });
+
+        }
 
         //Send WS join event
         if(wsSend) {
-          wsSend({type: 'JOIN_ROOM', roomId:room.id})
+          wsSend({type: 'JOIN_ROOM', roomId:data.room.id})
         }
 
-        selectRoom(room.id);
+        selectRoom(data.room.id);
         // Modal close
         onClose();
-        navigate(`room/${room.id}`)
+        navigate(`room/${data.room.id}`)
 
       } catch (err) {
         console.error('Failed to join room:', err);
@@ -151,7 +158,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({onClose}) => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="font-semibold text-[#2D3436]">{room.name}</h3>
-                          {room.isPublic && (
+                          {!room.isPrivate && (
                             <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
                               Public
                             </span>
@@ -166,7 +173,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({onClose}) => {
                         </div>
                       </div>
                       <button
-                        onClick={() => handleJoinRoom(room)}
+                        onClick={() => handleStartDM(room)}
                         disabled={joining === room.id}
                         className="ml-4 px-4 py-2 bg-[#00A7E1] text-white rounded-lg hover:bg-[#0090C4] disabled:opacity-50 transition-colors"
                       >

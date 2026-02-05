@@ -5,7 +5,6 @@ import { ChatHeader } from "./ChatHeader";
 import { EmptyState } from "./EmptyState";
 import { MessageInput } from "./MessageInput";
 import { MessagesList } from "./MessageList";
-import JoinRoomMOdal from "../sidebar/JoinRoomMOdal";
 
 interface ChatAreaProps {
   onBack?: () => void;
