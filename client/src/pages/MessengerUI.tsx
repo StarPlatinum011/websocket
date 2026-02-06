@@ -3,8 +3,8 @@ import { ChatArea } from "../features/chat/ChatArea/ChatArea";
 import { Sidebar } from "../features/chat/sidebar/Sidebar";
 import { useChatStore } from "../store/useChatStore";
 import { useNavigate } from "react-router-dom";
+import { CreateDMModal } from "@/features/chat/sidebar/CreateDMModal";
 // import StartDMModal from "../features/chat/sidebar/StartDMModal";
-import {  CreateDMModal } from "../features/chat/sidebar/CreateDMModal";
 
 const MessengerUI: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);

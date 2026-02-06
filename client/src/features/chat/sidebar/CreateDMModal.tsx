@@ -9,19 +9,18 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuthStore } from "@/store/useAuthStore";
 import { useChatStore } from "@/store/useChatStore";
 import { Users } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 
-// interface StartDMModalProps {
-//   onClose: () => void;
-// }
+
 
 interface AvailableRoom {
   id: string;
-  name: string;
+  username: string;
   description: string;
   memberCount: number;
   isPrivate: boolean;
@@ -39,6 +38,7 @@ export const CreateDMModal = () => {
     const selectRoom = useChatStore((state) => state.selectRoom);
     const isJoinRoomModalOpen = useChatStore((state)=> state.isJoinRoomModalOpen);
     const setJoinRoomModalOpen = useChatStore((state)=> state.setJoinRoomModalOpen);
+    const token = useAuthStore((state) => state.token)
 
     const navigate = useNavigate();
 
@@ -49,12 +49,14 @@ export const CreateDMModal = () => {
         try {
           const response = await fetch(`http://localhost:3000/api/dms/search?q=${searchQuery}`, {
             headers: {
-              'Authorizations': `Bearer ${localStorage.getItem('token')}`
+              'Authorization': `Bearer ${token}`
             }
           });
 
           const data = await response.json();
-          setAvailableRooms(data.rooms)
+              {console.log(data, 'Backend availableRooms')}
+
+          setAvailableRooms(data.users || []) //Because on this version 1.0 we are sending users
           
         } catch (err) {
             console.error('Failed to search rooms:', err);
@@ -62,6 +64,8 @@ export const CreateDMModal = () => {
           setLoading(false);
         }
     }
+
+    {console.log(availableRooms[0].username, 'availableRooms')}
 
     // Room Join
     const handleStartDM = async (room: AvailableRoom) => {
@@ -138,7 +142,6 @@ export const CreateDMModal = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="Search people..."
-                    // className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#00A7E1] text-[#2D3436]"
             />
             <Button 
                 type="button"
@@ -151,7 +154,7 @@ export const CreateDMModal = () => {
           </div>
         </div>
         <DialogFooter className="sm:justify-center">
-           {availableRooms.length === 0 ? (
+            {availableRooms.length === 0 ? (
                 <div className="text-center py-12">
                   <Users className="h-10 w-10 text-gray-400 mx-auto mb-3" />
                   <p className="text-[#2D3436] opacity-70">
@@ -167,7 +170,7 @@ export const CreateDMModal = () => {
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-[#2D3436]">{room.name}</h3>
+                          <h3 className="font-semibold text-[#2D3436]">{room.username}</h3>
                           {!room.isPrivate && (
                             <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
                               Public
@@ -179,20 +182,21 @@ export const CreateDMModal = () => {
                         </p>
                         <div className="flex items-center gap-1 text-xs text-[#2D3436] opacity-60">
                           <Users className="h-2 w-2" />
-                          <span>{room.memberCount} members</span>
+                          <span>{room.username} </span>
                         </div>
                       </div>
                       <button
                         onClick={() => handleStartDM(room)}
                         disabled={joining === room.id}
-                        className="ml-4 px-4 py-2 bg-[#00A7E1] text-white rounded-lg hover:bg-[#0090C4] disabled:opacity-50 transition-colors"
+                        className="ml-4 px-2 py-1.5 bg-[#00A7E1] text-white rounded-lg hover:bg-[#0090C4] disabled:opacity-50 transition-colors"
                       >
-                        {joining === room.id ? 'Joining...' : 'Join'}
+                        {joining === room.id ? 'Adding...' : 'Add'}
                       </button>
                     </div>
                   ))}
                 </div>
-              )}
+              )} 
+
         </DialogFooter>
       </DialogContent>
     </Dialog>
