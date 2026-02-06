@@ -3,7 +3,8 @@ import { ChatArea } from "../features/chat/ChatArea/ChatArea";
 import { Sidebar } from "../features/chat/sidebar/Sidebar";
 import { useChatStore } from "../store/useChatStore";
 import { useNavigate } from "react-router-dom";
-import StartDMModal from "../features/chat/sidebar/StartDMModal";
+// import StartDMModal from "../features/chat/sidebar/StartDMModal";
+import {  CreateDMModal } from "../features/chat/sidebar/CreateDMModal";
 
 const MessengerUI: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -12,7 +13,6 @@ const MessengerUI: React.FC = () => {
   const selectedRoomId = useChatStore((state) => state.selectedRoomId)
   const setRoomSelect = useChatStore((state) => state.selectRoom)
   const isJoinRoomModalOpen = useChatStore((state)=> state.isJoinRoomModalOpen);
-  const setJoinRoomModalOpen = useChatStore((state)=> state.setJoinRoomModalOpen);
 
   useEffect(()=> {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
@@ -50,7 +50,7 @@ const MessengerUI: React.FC = () => {
 
       {/* Modal for adding a new user  */}
       {isJoinRoomModalOpen && (
-        <StartDMModal onClose={() => setJoinRoomModalOpen(false)} />
+        <CreateDMModal />
       )}
     </div>
   );

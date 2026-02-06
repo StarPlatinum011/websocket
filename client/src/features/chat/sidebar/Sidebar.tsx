@@ -49,7 +49,7 @@ export const Sidebar = () => {
         <div className="flex justify-between items-center mb-3">
           <h1 className="text-2xl font-bold text-gray-800 ">Enigma</h1>
           <button
-            className="bg-[#F7A072] rounded-3xl p-1 cursor-pointer"
+            className="bg-[#00A7E1] rounded-3xl p-1 cursor-pointer"
             onClick={()=> setJoinRoomModalOpen(true)}
             title="Join Room"
           >
