@@ -29,9 +29,9 @@ export const useChatStore = create<ChatState>((set) => ({
 
   //Initial state
   rooms:[
-      { id: '1', name: 'Team Chat', lastMessage: 'See you tomorrow!', timestamp: '2m ago', unread: 2 },
-      { id: '2', name: 'Project Alpha', lastMessage: 'Updated the docs', timestamp: '1h ago', unread: 0 },
-      { id: '3', name: 'Sarah Wilson', lastMessage: 'Thanks for the help!', timestamp: '3h ago', unread: 1 },
+      { id: '1', name: 'Team Chat',type: 'DM',  lastMessage: 'See you tomorrow!', timestamp: '2m ago', unread: 2 },
+      { id: '2', name: 'Project Alpha',type: 'DM',  lastMessage: 'Updated the docs', timestamp: '1h ago', unread: 0 },
+      { id: '3', name: 'Sarah Wilson',type: 'DM',  lastMessage: 'Thanks for the help!', timestamp: '3h ago', unread: 1 },
   ],
   messages:{
       '1': [

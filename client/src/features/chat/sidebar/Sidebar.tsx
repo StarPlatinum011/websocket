@@ -18,7 +18,6 @@ export const Sidebar = () => {
   const clearUnread = useChatStore((state) => state.clearUnread);
   const wsSend = useChatStore((state)=> state.wsSend);
   const logout = useAuthStore((state) => state.logout);
-  // const userName = useAuthStore((state)=> state.userName)
   const setJoinRoomModalOpen = useChatStore((state)=> state.setJoinRoomModalOpen)
 
   const navigate = useNavigate()

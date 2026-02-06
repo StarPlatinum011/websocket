@@ -1,10 +1,7 @@
 import { Plus, Users } from "lucide-react";
-import JoinRoomModal from "../sidebar/JoinRoomMOdal";
 import { useChatStore } from "../../../store/useChatStore";
 
-
 export const EmptyState: React.FC = () => {
-  const isJoinRoomModalOpen = useChatStore((state) => state.isJoinRoomModalOpen);
   const setJoinRoomModalOpen = useChatStore((state)=> state.setJoinRoomModalOpen)
   return(
 
@@ -27,11 +24,7 @@ export const EmptyState: React.FC = () => {
             Join Room
           </button>
         </div>
-        
-        {/* Join Room Modal */}
-        {isJoinRoomModalOpen && (
-          <JoinRoomModal onClose={() => setJoinRoomModalOpen(false)} />
-        )}
+
       </div>
   )
 };

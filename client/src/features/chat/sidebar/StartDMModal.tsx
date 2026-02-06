@@ -4,7 +4,7 @@ import { useChatStore } from "../../../store/useChatStore";
 import { Search, Users, X } from "lucide-react";
 
 
-interface JoinRoomModalProps {
+interface StartDMModalProps {
   onClose: () => void;
 }
 
@@ -17,7 +17,7 @@ interface AvailableRoom {
 }
 
 
-const JoinRoomModal: React.FC<JoinRoomModalProps> = ({onClose}) => {
+const StartDMModal: React.FC<StartDMModalProps> = ({onClose}) => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [availableRooms, setAvailableRooms] = useState<AvailableRoom[]>([])
@@ -189,4 +189,4 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({onClose}) => {
     );
 };
 
-export default JoinRoomModal;
+export default StartDMModal;
