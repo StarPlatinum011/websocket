@@ -183,6 +183,8 @@ export const searchDms = async (
 
   const {q} = req.query;
   const userId = req.userId;
+
+  console.log(userId, " THi s uid")
   try {
     if (!q || typeof q !== 'string' || q.trim().length === 0) {
       return res.status(400).json({ error: 'Search query required' });
@@ -190,15 +192,15 @@ export const searchDms = async (
 
     const users = await prisma.user.findMany({
       where: {
-        AND:[
-          { id: {not: userId} },
-          {
-            OR:[
-              {username: {contains: q, mode: 'insensitive'}},
-              { email: { contains: q , mode: 'insensitive' } }
-            ]
-          }
-        ]
+        
+        id: {not: userId},
+      
+        OR:[
+          {username: {contains: q, mode: 'insensitive'}},
+          { email: { contains: q , mode: 'insensitive' } }
+        ],
+          
+        
       },
       select:{
         id: true,

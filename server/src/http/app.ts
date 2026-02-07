@@ -3,6 +3,7 @@ import cors from 'cors';
 import express, { type Express, type Request, type Response } from "express";import auth from './routes/auth.js'
 import dms from './routes/dm.js'
 import roomMessages from './routes/roomMessages.js'
+import { requireSession } from "./middleware/session.js";
 
 export const createHttpApp = ():Express => {
   const app:Express = express();
@@ -19,7 +20,7 @@ export const createHttpApp = ():Express => {
   
   app.use("/api/auth", auth);
   // app.use("/api/rooms", rooms)
-  app.use("/api/dms", dms)
+  app.use("/api/dms",requireSession, dms)
   app.use('/api/rooms/:roomId/messages', roomMessages)
   
   interface HttpError extends Error {

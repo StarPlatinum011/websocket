@@ -18,6 +18,7 @@ export const Sidebar = () => {
   const clearUnread = useChatStore((state) => state.clearUnread);
   const wsSend = useChatStore((state)=> state.wsSend);
   const logout = useAuthStore((state) => state.logout);
+  const username = useAuthStore((state) => state.userName);
   const setJoinRoomModalOpen = useChatStore((state)=> state.setJoinRoomModalOpen)
 
   const navigate = useNavigate()
@@ -48,23 +49,29 @@ export const Sidebar = () => {
       <div className="p-4 border-b border-gray-200">
         <div className="flex justify-between items-center mb-3">
           <h1 className="text-2xl font-bold text-gray-800 ">Enigma</h1>
+                  <p>{username}</p>
+
+        </div>
+        <div className="flex justify-between">
+          <div className="relative">
+            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            
+          </div>
           <button
-            className="bg-[#00A7E1] rounded-3xl p-1 cursor-pointer"
+            className="bg-[#00A7E1] rounded-[50%] p-1 cursor-pointer"
             onClick={()=> setJoinRoomModalOpen(true)}
             title="Join Room"
           >
-            <Plus className="h-5 w-5 text-white"/>
+            <Plus className=" w-8  text-white"/>
           </button>
-        </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+
         </div>
       </div>
 
