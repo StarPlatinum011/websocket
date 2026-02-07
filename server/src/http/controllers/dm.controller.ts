@@ -184,7 +184,6 @@ export const searchDms = async (
   const {q} = req.query;
   const userId = req.userId;
 
-  console.log(userId, " THi s uid")
   try {
     if (!q || typeof q !== 'string' || q.trim().length === 0) {
       return res.status(400).json({ error: 'Search query required' });

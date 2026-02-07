@@ -60,7 +60,6 @@ export const CreateDMModal = () => {
           });
 
           const data = await response.json();
-              // {console.log(data, 'Backend availableRooms')}
           if(active) {
             setAvailableRooms(data.users || []) //Because on this version 1.0 we are sending users not rooms yet
           }
@@ -80,7 +79,6 @@ export const CreateDMModal = () => {
 
   
 
-    {console.log(availableRooms[0], 'availableRooms')}
 
     // Room Join
     const handleStartDM = async (room: AvailableRoom) => {
@@ -90,9 +88,12 @@ export const CreateDMModal = () => {
             const response = await fetch(`http://localhost:3000/api/dms/create`, {
                 method: 'POST',
                 headers: {
-                'Authorization' : `Bearer ${localStorage.getItem('token')}`,
+                'Authorization' : `Bearer ${token}`,
                 'Content-Type' : 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                  targetUserId: room.id
+                })
             });
 
             if(!response.ok) throw new Error("Failed to join the room");
