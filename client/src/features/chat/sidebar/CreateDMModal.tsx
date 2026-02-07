@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -12,10 +11,8 @@ import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/store/useAuthStore";
 import { useChatStore } from "@/store/useChatStore";
 import { Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-
 
 
 interface AvailableRoom {
@@ -42,10 +39,19 @@ export const CreateDMModal = () => {
 
     const navigate = useNavigate();
 
-     // Search for rooms
-    const handleSearch = async () => {
-        setLoading(true);
+    //Debounce logic
+    useEffect(()=> {
 
+      //Dont search on empty input
+      if(!searchQuery.trim()) {
+        setAvailableRooms([]);
+        return;
+      }
+
+      let active = true;
+      
+      //Set timer
+      const delayDebounce = setTimeout(async ()=> {
         try {
           const response = await fetch(`http://localhost:3000/api/dms/search?q=${searchQuery}`, {
             headers: {
@@ -54,18 +60,27 @@ export const CreateDMModal = () => {
           });
 
           const data = await response.json();
-              {console.log(data, 'Backend availableRooms')}
-
-          setAvailableRooms(data.users || []) //Because on this version 1.0 we are sending users
+              // {console.log(data, 'Backend availableRooms')}
+          if(active) {
+            setAvailableRooms(data.users || []) //Because on this version 1.0 we are sending users not rooms yet
+          }
           
         } catch (err) {
             console.error('Failed to search rooms:', err);
         } finally {
           setLoading(false);
         }
-    }
+      }, 500);
 
-    {console.log(availableRooms[0].username, 'availableRooms')}
+      return ()=>{
+        active = false;
+        clearTimeout(delayDebounce)
+      } 
+    }, [searchQuery, token])
+
+  
+
+    {console.log(availableRooms[0], 'availableRooms')}
 
     // Room Join
     const handleStartDM = async (room: AvailableRoom) => {
@@ -136,21 +151,14 @@ export const CreateDMModal = () => {
             </Label>
             <Input
               id="link"
-              defaultValue="Enter username or email"
-               type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    placeholder="Search people..."
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search people..."
+              autoComplete="off"
             />
-            <Button 
-                type="button"
-                onClick={handleSearch}
-                disabled={loading}
-                className="bg-[#F7A072]"
-            >
-                {loading ? 'Searching...' : 'Search'}
-            </Button>
+            {loading && <p>Searching...</p>}
+           
           </div>
         </div>
         <DialogFooter className="sm:justify-center">
