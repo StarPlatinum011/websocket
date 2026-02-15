@@ -10,6 +10,9 @@ interface ChatState {
     wsStatus: 'Online' | 'Offline';
     isJoinRoomModalOpen: boolean;
     wsSend: ((data: OutgoingWebSocketMessage) => void) | null; //storing function as a state
+    
+    roomsLoading: boolean; //Room Loading states
+    roomsError: string | null;
 
     // Actions
     setRooms: (rooms: Room[]) => void;
@@ -22,7 +25,8 @@ interface ChatState {
     setWsSend: (sender: (data: OutgoingWebSocketMessage) => void) => void;
     setJoinRoomModalOpen: (open: boolean) => void;
     addRoom: (room: Room) => void;
-
+    removeRoom: (roomId: string) => void;
+    fetchRooms: (token: string) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -52,10 +56,82 @@ export const useChatStore = create<ChatState>((set) => ({
   wsStatus: 'Offline',
   wsSend: null,
   isJoinRoomModalOpen: false,
+  roomsLoading: false,
+  roomsError: null,
 
-  // Actions
+  // Room Actions 
   setRooms: (rooms) => set({ rooms }),
+
+  selectRoom: (roomId) => set({ selectedRoomId: roomId }),
+
+  addRoom:(room) =>
+    set((state) => ({
+      rooms: [...state.rooms, room]
+    })),
+
+  removeRoom: (roomId) => 
+    set((state) => ({
+      rooms: state.rooms.filter(r => r.id !== roomId)
+    })),
+
+  //fetch from backend 
+  fetchRooms: async (token:string) => {
+    set({roomsLoading: true, roomsError: null});
+    try {
+      const response = await fetch('http://localhost:3000/api/dms',{
+        headers:{
+          'Authorization': `Bearer ${token}` 
+        }
+      });
+
+      if(!response.ok) {
+        throw new Error("Failed to fetch rooms")
+      }
+      
+      const data = await response.json();
+      console.log("these are rooms ", data);
+
+      set({
+        rooms : data.rooms,
+        roomsLoading: false
+      });
+
+    } catch (error) {
+      console.error('Failed to fetch rooms:', error);
+      set({ 
+        roomsError: error instanceof Error ? error.message : 'Failed to fetch rooms',
+        roomsLoading: false 
+      });
+    }
+  },
+
+  updateRoomLastMessage: (roomId, content) => 
+  set((state) => {
+    const updateUnreadRooms = state.rooms.map(stateRoom => {
+      if( stateRoom.id === roomId) {
+        return { ...stateRoom, lastMessage: content, timestamp: 'Just now'}
+      }
+
+      return stateRoom;
+    });
+
+    return { rooms: updateUnreadRooms };
+  }),
+
   
+  clearUnread: (roomId) => 
+    set((state) => {
+      const updatedRooms = state.rooms.map(r => {
+        if( r.id === roomId) {
+          return { ...r, unread: 0 }
+        }
+        return r;
+      });
+
+      return { rooms: updatedRooms }
+    }),
+
+  // Message Actions
   //Exec this fn when adding new msg to room 
   addMessage: (roomId, message) => 
     set((state) =>{
@@ -79,42 +155,14 @@ export const useChatStore = create<ChatState>((set) => ({
       }
     })),
   
-  selectRoom: (roomId) => set({ selectedRoomId: roomId }),
   
   setWsStatus: (status) => set({ wsStatus: status }),
   
-  updateRoomLastMessage: (roomId, content) => 
-    set((state) => {
-      const updateUnreadRooms = state.rooms.map(stateRoom => {
-        if( stateRoom.id === roomId) {
-          return { ...stateRoom, lastMessage: content, timestamp: 'Just now'}
-        }
-
-        return stateRoom;
-      });
-
-      return { rooms: updateUnreadRooms };
-    }),
-
   
-  clearUnread: (roomId) => 
-    set((state) => {
-      const updatedRooms = state.rooms.map(r => {
-        if( r.id === roomId) {
-          return { ...r, unread: 0 }
-        }
-        return r;
-      });
-
-      return { rooms: updatedRooms }
-    }),
 
   setWsSend: (sender) => set({wsSend: sender}),
 
   setJoinRoomModalOpen: (open) => set({isJoinRoomModalOpen: open}),
   
-  addRoom:(room) =>
-    set((state) => ({
-      rooms: [...state.rooms, room]
-    }))
+  
 }));

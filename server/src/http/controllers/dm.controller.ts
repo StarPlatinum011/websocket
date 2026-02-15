@@ -26,7 +26,7 @@ export const createOrGetDM = async (
     where : {id: targetUserId},
     select: { id:true, username:true, email:true}
   })
-  if(!targetUser) res.status(404).json({ error: 'User not found'})
+  if(!targetUser) res.status(404).json({ error: 'User not found', targetUser})
 
   // This is what goes in row memberHash to enable 1-1 DM
   const memberHash = [userId, targetUserId].sort().join(':');
@@ -122,7 +122,11 @@ export const getUserDMs = async (req: Request, res: Response) => {
       },
       messages: {
         orderBy: {createdAt: 'desc'},
-        take: 1 //Last message only
+        take: 1, //Last message only,
+        select:{
+          content: true,
+          createdAt: true
+        }
       }
     },
     orderBy: {
@@ -131,20 +135,27 @@ export const getUserDMs = async (req: Request, res: Response) => {
     
   });
 
+  //   console.log('Type of dms:', typeof dms);
+  //   console.log('Is array?', Array.isArray(dms));
+  //   console.log('dms value:', dms);
+  //   console.log('dms length:', dms.length);
   // Format for frontend
   const formatted = dms.map( dm => {
     const otherUser = dm.members[0]?.user;
-    const lastMessage = dm.messages[0];
+    const lastMessage = dm.messages.length > 0 ?  dm.messages[0]: null;
+    // console.log(lastMessage, ' Last message');
+    // console.log(dm, ' The DMS');
+
 
     return {
       id: dm.id,
+      name: otherUser.username || 'Unknown user',
       type: dm.type,
-      name: otherUser.username,
+      lastMessage: lastMessage?.content ?? null,
+      timeStamp: lastMessage?.createdAt ?? dm.lastMessageAt,
+      unread: 0,
       memeberHash: dm.memberHash,
       otherUser: otherUser,
-      lastMessage: lastMessage.content || '',
-      timeStamp: lastMessage.createdAt,
-      unread: 0
     }
   })
 
