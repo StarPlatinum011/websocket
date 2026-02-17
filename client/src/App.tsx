@@ -3,7 +3,7 @@ import MessengerUI from './pages/MessengerUI'
 import './style.css'
 import { useWebSocket } from './hooks/useWebSocket'
 import { useChatStore } from './store/useChatStore';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAuthStore } from './store/useAuthStore';
 import LoginPage from './features/auth/LoginPage';
 import ProtectedRoute from './features/components/ProtectedRoute';
@@ -26,34 +26,34 @@ function App() {
       fetchRooms(token);
       setWsSend(sendMessage)
     }
-  }, [sendMessage, fetchRooms, setWsSend, isAuthenticated, token])
+  }, [ isAuthenticated, token])
 
-  // if(roomsLoading) {
-  //   return (
-  //     <div   className="h-screen flex items-center justify-center">
-  //       <div className="text-center">
-  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00A7E1] mx-auto mb-4"></div>
-  //         <p className="text-[#2D3436]">Loading your conversations...</p>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+  if(roomsLoading) {
+    return (
+      <div   className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00A7E1] mx-auto mb-4"></div>
+          <p className="text-[#2D3436]">Loading your conversations...</p>
+        </div>
+      </div>
+    )
+  }
 
-  //   if (roomsError) {
-  //   return (
-  //     <div className="h-screen flex items-center justify-center">
-  //       <div className="text-center">
-  //         <p className="text-red-500 mb-4">{roomsError}</p>
-  //         <button
-  //           onClick={() => token && fetchRooms(token)}
-  //           className="px-4 py-2 bg-[#00A7E1] text-white rounded-lg"
-  //         >
-  //           Retry
-  //         </button>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+    if (roomsError) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{roomsError}</p>
+          <button
+            onClick={() => token && fetchRooms(token)}
+            className="px-4 py-2 bg-[#00A7E1] text-white rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>

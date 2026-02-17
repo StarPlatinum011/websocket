@@ -23,6 +23,7 @@ export const Sidebar = () => {
 
   const navigate = useNavigate()
 
+  
   const filteredRooms = rooms.filter(room =>
     room.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -40,10 +41,9 @@ export const Sidebar = () => {
       wsSend({type: "JOIN_ROOM", roomId:room.id})
     }
     navigate(`/room/${room.id}`);
-
   }
   
-  console.log("ConnectionStatus: ", wsStatus);
+  // console.log("ConnectionStatus: ", wsStatus);
   return (
     <div className="lg:w-80 bg-white lg:border-r w-full border-gray-200 flex flex-col">
       <div className="p-4 border-b border-gray-200">

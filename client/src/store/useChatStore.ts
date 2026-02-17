@@ -89,10 +89,9 @@ export const useChatStore = create<ChatState>((set) => ({
       }
       
       const data = await response.json();
-      console.log("these are rooms ", data);
 
       set({
-        rooms : data.rooms,
+        rooms : data.dms,
         roomsLoading: false
       });
 
