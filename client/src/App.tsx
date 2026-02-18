@@ -24,9 +24,11 @@ function App() {
       console.log('Fetching rooms...');
       
       fetchRooms(token);
+      //Storing sendMessage in the zustand to prevent prop drilling
+      // wsSend({type ... }) equivalent to sendMessage({type...})
       setWsSend(sendMessage)
     }
-  }, [ isAuthenticated, token])
+  }, [ isAuthenticated, token ])
 
   if(roomsLoading) {
     return (

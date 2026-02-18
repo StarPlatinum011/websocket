@@ -10,6 +10,8 @@ export const handleJoinRoom = async(
     try {
     await assertRoomMembership(ws.userId, roomId);
     attachSocketToRoom(roomId, ws);
+    ws.send(JSON.stringify({type: 'JOIN_ROOM', roomId}));
+
     
   } catch {
     ws.send(JSON.stringify({
@@ -31,6 +33,7 @@ export const handleLeaveRoom = (
 
 
     sockets.delete(ws);
+    ws.send(JSON.stringify({type: 'LEAVE_ROOM', roomId}));
 }
 
 // Logic to reconnect sockets on reconnections

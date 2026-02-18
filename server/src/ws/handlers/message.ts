@@ -31,9 +31,9 @@ export const handleMessage = async (ws: AuthenticatedWS, data: RawData) => {
     }
 }
 
-// Type enforcing raw data we got from ws 
+// Type enforcing raw data we got from ws  
 function normalizeMessage(data: unknown): string {
-  if (typeof data === "string") return data;
+  if (typeof data === "string") return data; 
   if (Buffer.isBuffer(data)) return data.toString("utf8");
   if (data instanceof ArrayBuffer) {
     return Buffer.from(data).toString("utf8");

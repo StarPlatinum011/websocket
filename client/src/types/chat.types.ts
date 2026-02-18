@@ -30,7 +30,7 @@ export interface OutgoingWebSocketMessage {
 }
 
 export interface IncomingWebSocketMessage {
-  type: 'NEW_MESSAGE' | 'USER_JOINED' | 'USER_LEFT' | 'ROOM_LIST' | 'ERROR';
+  type: 'SEND_MESSAGE' | 'JOIN_ROOM' | 'LEAVE_ROOM' | 'ROOM_LIST' | 'ERROR' | 'NEW_MESSAGE';
   
   // For NEW_MESSAGE
   messageId?: string;

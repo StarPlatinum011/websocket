@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { IncomingWebSocketMessage, OutgoingWebSocketMessage } from "../types/chat.types";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
@@ -20,20 +20,23 @@ export const useWebSocket = (url: string, token: string) => {
       return;
     }
 
+    if(ws.current) return;
+
     console.log("Connecting to WebSocket...");
 
     //Single websocket conn
-    ws.current = new WebSocket(`${url}?token=${token}`);
+    const socket = new WebSocket(`${url}?token=${token}`);
+    ws.current = socket;
 
     //Connection open
-    ws.current.onopen = () => {
-      console.log("WebSocket connected");
+    socket.onopen = () => {
+      console.log("CLIENT: open");
       setWsStatus('Online');
     };
 
     //Connection close
-    ws.current.onclose = (event) => {
-      console.log(' WebSocket disconnected');
+    socket.onclose = (event) => {
+      console.log("CLIENT: close")
       setWsStatus('Offline');
 
        // If closed due to auth error
@@ -43,10 +46,28 @@ export const useWebSocket = (url: string, token: string) => {
       }
     }
 
-    // Receive message from server
-    ws.current.onmessage = (e) => {
-      const data: IncomingWebSocketMessage = JSON.parse(e.data);
-      console.log('Data: ', data)
+    //handle on message
+    socket.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      handleIncomingMessasge(data);
+    }
+   
+    //Error handle
+    socket.onerror = (error) => {
+      console.log("Websocket error: ", error)
+    }
+
+    return () => {
+      console.log("Closing websocket connection...");
+        socket.close();
+      
+    };
+  }, [url, token]);
+
+
+  const handleIncomingMessasge = useCallback(( data: IncomingWebSocketMessage ) => {
+     // Receive message from server
+    
 
       switch (data.type) {
         case "NEW_MESSAGE":
@@ -63,17 +84,11 @@ export const useWebSocket = (url: string, token: string) => {
           }
           break;
 
-        case "ROOM_LIST":
-          if(data.rooms ) {
-            setRooms(data.rooms);
-          }
-          break;
-
-        case "USER_JOINED":
+        case "JOIN_ROOM":
           console.log(`${data.userName} joined ${data.roomId}`);
           break;
 
-        case "USER_LEFT":
+        case "LEAVE_ROOM":
           console.log(`User left room: ${data.roomId}`);
           break;
 
@@ -88,22 +103,8 @@ export const useWebSocket = (url: string, token: string) => {
         default:
           console.log("Unknown message type: ", data);
           
-      }
-
-    }
-
-    //Error hhandle
-    ws.current.onerror = (error) => {
-      console.log("Websocket error: ", error)
-    }
-
-    return () => {
-      console.log("Closing websocket connection...");
-      if(ws.current) {
-        ws.current.close();
-      }
-    };
-  }, [url, token, setWsStatus, addMessage, setRooms, logout]);
+      } 
+  }, [addMessage, logout])
 
 
   const sendMessage = (data: OutgoingWebSocketMessage) => {

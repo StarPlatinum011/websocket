@@ -10,6 +10,8 @@ import { attachSocketToRoom } from "./handlers/roomHandle.js";
 export function handleConnection(ws: AuthenticatedWS, req: Request) {
     void(async()=> {
         try {
+              console.log("SERVER: connection established");
+
             if(!req.url) {
                 ws.close(4000, "Invalid request.");
                 return;
@@ -23,7 +25,7 @@ export function handleConnection(ws: AuthenticatedWS, req: Request) {
                 return;
             }
             const session = await validateSession(token);
-    
+
             //Attach identity to socket
             ws.userId = session.userId;
             ws.sessionId = session.id;
