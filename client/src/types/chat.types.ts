@@ -25,8 +25,10 @@ export interface Message {
 
 export interface OutgoingWebSocketMessage {
   type: 'SEND_MESSAGE' | 'JOIN_ROOM' | 'LEVAE_ROOM';
-  roomId?: string;
-  content?: string;
+  payload: {
+    roomId?: string;
+    content?: string;
+  }
 }
 
 export interface IncomingWebSocketMessage {

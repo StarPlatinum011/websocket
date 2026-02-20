@@ -29,12 +29,12 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
   //Join room when component mounts
   useEffect(()=> {
     if(roomId && wsSend) {
-      wsSend({ type: "JOIN_ROOM", roomId});
+      wsSend({ type: "JOIN_ROOM",payload:{roomId} });
     }
 
     return() => {
       if(roomId && wsSend) {
-        wsSend({type: "LEVAE_ROOM", roomId})
+        wsSend({type: "LEVAE_ROOM", payload:{roomId}})
       }
     }
   }, [roomId, wsSend])
@@ -67,11 +67,13 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
     addMessage(roomId, newMessage);
     updateRoomLastMessage( roomId, content);
 
-    //send data to server
+    //send data to WebSocket
     wsSend({
       type: 'SEND_MESSAGE', 
-      roomId, 
-      content
+      payload: {
+        roomId, 
+        content
+      }
     });
 
   }

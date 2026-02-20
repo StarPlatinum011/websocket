@@ -5,10 +5,31 @@ import { AuthenticatedWS } from "../types/types.js";
 import { handleJoinRoom, handleLeaveRoom } from "./roomHandle.js";
 
 export const handleMessage = async (ws: AuthenticatedWS, data: RawData) => {
-    const rawText = normalizeMessage(data)
-    const parsed = WSClientMessage.safeParse(JSON.parse(rawText));
+  let payload: unknown;
+  
+  try {
+      const rawText = normalizeMessage(data)
+      payload = JSON.parse(rawText);
+      console.log("NORMALIZED:", rawText);
+
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (err) {
+    ws.send(JSON.stringify({
+      type: "ERROR",
+      error: "Invalid JSON"
+    }));
+    return;
+  }
+
+  console.log("RAW:", data);
+console.log("PARSED PAYLOAD:", payload);
+console.log("TYPEOF PAYLOAD:", typeof payload);
+  const parsed = WSClientMessage.safeParse(payload);
+  console.log('This is message area: ', parsed)
 
     if (!parsed.success) {
+          // console.error("Zod error:", parsed.treeifyError(error));
         ws.send(JSON.stringify({
         type: "ERROR",
         payload: { message: "Invalid message format" }

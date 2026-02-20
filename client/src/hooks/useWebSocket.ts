@@ -6,12 +6,13 @@ import { useAuthStore } from "../store/useAuthStore";
 
 export const useWebSocket = (url: string, token: string) => {
 
-  const ws = useRef<WebSocket | null>(null);
-  const logout = useAuthStore((state)=> state.logout );
+  const wsRef = useRef<WebSocket | null>(null);
+  const shouldCloseRef = useRef(false);
 
+  const logout = useAuthStore((state)=> state.logout );
   const setWsStatus = useChatStore((state) => state.setWsStatus);
   const addMessage = useChatStore((state) => state.addMessage);
-  const setRooms = useChatStore((state) => state.setRooms)
+  // const setRooms = useChatStore((state) => state.setRooms)
 
   useEffect(() => {
 
@@ -20,17 +21,18 @@ export const useWebSocket = (url: string, token: string) => {
       return;
     }
 
-    if(ws.current) return;
+    if(wsRef.current) return;
 
     console.log("Connecting to WebSocket...");
 
     //Single websocket conn
     const socket = new WebSocket(`${url}?token=${token}`);
-    ws.current = socket;
+    wsRef.current = socket;
 
     //Connection open
     socket.onopen = () => {
       console.log("CLIENT: open");
+      socket.send(JSON.stringify({ type: "PING"}));
       setWsStatus('Online');
     };
 
@@ -58,18 +60,18 @@ export const useWebSocket = (url: string, token: string) => {
     }
 
     return () => {
-      console.log("Closing websocket connection...");
+      if(shouldCloseRef.current) {
+        console.log("Closing websocket connection...");
         socket.close();
+      }
       
     };
   }, [url, token]);
 
 
   const handleIncomingMessasge = useCallback(( data: IncomingWebSocketMessage ) => {
-     // Receive message from server
-    
 
-      switch (data.type) {
+    switch (data.type) {
         case "NEW_MESSAGE":
           if(data.roomId && data.messageId && data.content) {
 
@@ -108,12 +110,17 @@ export const useWebSocket = (url: string, token: string) => {
 
 
   const sendMessage = (data: OutgoingWebSocketMessage) => {
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify(data));
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify(data));
     } else {
       console.warn("websocket not connected, cannot send: ", data)
     }
   };
+
+  // const disconnect = () => {
+  //   shouldCloseRef.current = true;
+  //   wsRef.current?.close();
+  // }
 
   return {sendMessage};
 };

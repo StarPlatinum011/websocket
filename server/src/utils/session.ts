@@ -3,7 +3,7 @@ import {prisma} from "../db/prisma.js"
 import { addHours } from "date-fns"
 import { sessionsMap } from "../ws/state.js";
 
-const SESSION_TTL_HOURS = 24;
+const SESSION_TTL_HOURS = 24 * 7;
 
 //create a new session for a user 
 export async function createSession(userId: string) {
