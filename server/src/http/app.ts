@@ -4,6 +4,7 @@ import express, { type Express, type Request, type Response } from "express";imp
 import dms from './routes/dm.js'
 import roomMessages from './routes/roomMessages.js'
 import { requireSession } from "./middleware/session.js";
+import { prisma } from "../db/prisma.js";
 
 export const createHttpApp = ():Express => {
   const app:Express = express();
@@ -21,7 +22,20 @@ export const createHttpApp = ():Express => {
   app.use("/api/auth", auth);
   // app.use("/api/rooms", rooms)
   app.use("/api/dms",requireSession, dms)
-  app.use('/api/rooms/:roomId/messages', roomMessages)
+  app.use('/api/rooms/:roomId/messages', roomMessages);
+  
+  app.get("/api/me", requireSession, async (req: Request, res) => {
+    const userId = req.userId; 
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    if(!user) return res.status(401).json("Unauthorized");
+
+    res.json({
+      id: user.id,
+      name: user.username,
+      email: user.email
+    })
+})
   
   interface HttpError extends Error {
     status?: number;

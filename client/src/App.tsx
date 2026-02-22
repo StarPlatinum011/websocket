@@ -10,25 +10,51 @@ import ProtectedRoute from './features/components/ProtectedRoute';
 import RegisterPage from './features/auth/RegisterPage';
 function App() {
   const token = useAuthStore((state)=> state.token);
-  const isAuthenticated = useAuthStore((state)=> state.isAuthenticated);
   const setWsSend = useChatStore((state) => state.setWsSend);
   const fetchRooms = useChatStore((state)=> state.fetchRooms);
   const roomsLoading = useChatStore((state) => state.roomsLoading);
   const roomsError = useChatStore((state) => state.roomsError);
   const { sendMessage } = useWebSocket('ws://localhost:3000', token || '');
-
-
+  const logout = useAuthStore((state) => state.logout);
+  const setAuthenticatedUser = useAuthStore((state) => state.setAuthenticatedUser);
+  const setUnAuthenticatedUser = useAuthStore((state) => state.setUnauthenticated);
+  
   //Store send function on Zustand store
   useEffect(()=> {
-    if(isAuthenticated && token) {
-      console.log('Fetching rooms...');
-      
-      fetchRooms(token);
-      //Storing sendMessage in the zustand to prevent prop drilling
-      // wsSend({type ... }) equivalent to sendMessage({type...})
-      setWsSend(sendMessage)
+
+    async function bootstrap() {
+      if(!token) {
+        logout();
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/me", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        if (!response) throw new Error("Unauthorize");
+
+        const user = await response.json();
+        //rehydrate the user details in store
+        setAuthenticatedUser(user);
+
+        fetchRooms(token);
+        //Storing sendMessage in the zustand to prevent prop drilling
+        // wsSend({type ... }) equivalent to sendMessage({type...})
+        setWsSend(sendMessage)
+
+      } catch (err) {
+        console.log("Error on bootstrapping: ", err);
+        setUnAuthenticatedUser();
+      }
     }
-  }, [ isAuthenticated, token ])
+
+    bootstrap();
+    
+  }, [ token ])
 
   if(roomsLoading) {
     return (
@@ -81,8 +107,8 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          <Route path="/404" element={<div>404 Not Found.</div>} />
-          <Route path="*" element={<Navigate to={'/404'} replace/>} />
+          {/* <Route path="/404" element={<div>404 Not Found.</div>} /> */}
+          {/* <Route path="*" element={<Navigate to={'/404'} replace/>} /> */}
       </Routes>
     </BrowserRouter>
   )

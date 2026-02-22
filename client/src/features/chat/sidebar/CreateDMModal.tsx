@@ -118,7 +118,7 @@ export const CreateDMModal = () => {
 
             //Send WS join event
             if(wsSend) {
-                wsSend({type: 'JOIN_ROOM', roomId:data.room.id})
+                wsSend({type: 'JOIN_ROOM', payload:{roomId:data.room.id}})
             }
 
             selectRoom(data.room.id);

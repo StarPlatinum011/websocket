@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Message, Room, OutgoingWebSocketMessage } from '../types/chat.types';
+import { fetchRoomsFromServer } from "@/features/services/rooms";
 
 
 interface ChatState {
@@ -39,17 +40,17 @@ export const useChatStore = create<ChatState>((set) => ({
   ],
   messages:{
       '1': [
-          { id: 'm1', userId: '2', userName: 'John Doe', content: 'Hey everyone!', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
-          { id: 'm2', userId: 'me', userName: 'You', content: 'Hi John!', timestamp: new Date(Date.now() - 3000000).toISOString(), isMine: true },
-          { id: 'm3', userId: '3', userName: 'Jane Smith', content: 'See you tomorrow!', timestamp: new Date(Date.now() - 120000).toISOString(), isMine: false },
+          { id: 'm1', userId: '2', username: 'John Doe', content: 'Hey everyone!', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
+          { id: 'm2', userId: 'me', username: 'You', content: 'Hi John!', timestamp: new Date(Date.now() - 3000000).toISOString(), isMine: true },
+          { id: 'm3', userId: '3', username: 'Jane Smith', content: 'See you tomorrow!', timestamp: new Date(Date.now() - 120000).toISOString(), isMine: false },
       ],
       '2': [
-          { id: 'm4', userId: '4', userName: 'Mike Johnson', content: 'Updated the docs', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
+          { id: 'm4', userId: '4', username: 'Mike Johnson', content: 'Updated the docs', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
       ],
       '3': [
-          { id: 'm5', userId: '3', userName: 'Sarah Wilson', content: 'Can you help me with this?', timestamp: new Date(Date.now() - 7200000).toISOString(), isMine: false },
-          { id: 'm6', userId: 'me', userName: 'You', content: 'Sure, what do you need?', timestamp: new Date(Date.now() - 7000000).toISOString(), isMine: true },
-          { id: 'm7', userId: '3', userName: 'Sarah Wilson', content: 'Thanks for the help!', timestamp: new Date(Date.now() - 10800000).toISOString(), isMine: false },
+          { id: 'm5', userId: '3', username: 'Sarah Wilson', content: 'Can you help me with this?', timestamp: new Date(Date.now() - 7200000).toISOString(), isMine: false },
+          { id: 'm6', userId: 'me', username: 'You', content: 'Sure, what do you need?', timestamp: new Date(Date.now() - 7000000).toISOString(), isMine: true },
+          { id: 'm7', userId: '3', username: 'Sarah Wilson', content: 'Thanks for the help!', timestamp: new Date(Date.now() - 10800000).toISOString(), isMine: false },
       ],
   },
   selectedRoomId: null,
@@ -78,20 +79,9 @@ export const useChatStore = create<ChatState>((set) => ({
   fetchRooms: async (token:string) => {
     set({roomsLoading: true, roomsError: null});
     try {
-      const response = await fetch('http://localhost:3000/api/dms',{
-        headers:{
-          'Authorization': `Bearer ${token}` 
-        }
-      });
-
-      if(!response.ok) {
-        throw new Error("Failed to fetch rooms")
-      }
-      
-      const data = await response.json();
-
+      const rooms = await fetchRoomsFromServer(token);
       set({
-        rooms : data.dms,
+        rooms : rooms.dms,
         roomsLoading: false
       });
 

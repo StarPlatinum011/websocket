@@ -17,7 +17,7 @@ export interface Room {
 export interface Message {
   id: string;
   userId: string;
-  userName: string;
+  username: string;
   content: string;
   timestamp: string;
   isMine: boolean;
@@ -38,7 +38,7 @@ export interface IncomingWebSocketMessage {
   messageId?: string;
   roomId?: string;
   userId?: string;
-  userName?: string;
+  username?: string;
   content?: string;
   timestamp?: string;
   

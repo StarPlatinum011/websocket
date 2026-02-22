@@ -38,7 +38,7 @@ export const Sidebar = () => {
     clearUnread(room.id);
     
     if(wsSend) {
-      wsSend({type: "JOIN_ROOM", roomId:room.id})
+      wsSend({type: "JOIN_ROOM", payload: {roomId:room.id}})
     }
     navigate(`/room/${room.id}`);
   }

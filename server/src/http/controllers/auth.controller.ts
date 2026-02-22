@@ -44,7 +44,7 @@ export const registerUser =  async (req: Request, res:Response) => {
         return res.status(201).json({
             message: "User Registered successfully.",
             token: session.token,
-            userName: user.username,
+            username: user.username,
             userId: session.userId
         })
     } catch (error) {
@@ -88,7 +88,7 @@ export const loginUser = async (req: Request, res:Response) => {
         return res.status(200).json({
             message: 'Logged in successfully.',
             userId: user.id,
-            userName: user.username,
+            username: user.username,
             token: session.token
         })
         

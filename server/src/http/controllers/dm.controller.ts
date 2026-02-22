@@ -135,10 +135,7 @@ export const getUserDMs = async (req: Request, res: Response) => {
     
   });
 
-  //   console.log('Type of dms:', typeof dms);
-  //   console.log('Is array?', Array.isArray(dms));
-  //   console.log('dms value:', dms);
-  //   console.log('dms length:', dms.length);
+
   // Format for frontend
   const formatted = dms.map( dm => {
     const otherUser = dm.members[0]?.user;

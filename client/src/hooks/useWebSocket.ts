@@ -78,7 +78,7 @@ export const useWebSocket = (url: string, token: string) => {
             addMessage(data.roomId, {
               id: data.messageId,
               userId: data.userId || "Unknown",
-              userName: data.userName || "Unknown User",
+              username: data.username || "Unknown User",
               content: data.content,
               timestamp: data.timestamp || new Date().toISOString(),
               isMine:false
@@ -87,7 +87,7 @@ export const useWebSocket = (url: string, token: string) => {
           break;
 
         case "JOIN_ROOM":
-          console.log(`${data.userName} joined ${data.roomId}`);
+          console.log(`${data.username} joined ${data.roomId}`);
           break;
 
         case "LEAVE_ROOM":

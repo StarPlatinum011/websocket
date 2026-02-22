@@ -1,15 +1,22 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+interface MeResponse {
+    userId: string
+    username: string
+    userEmail?: string
+}
 
 interface AuthState {
     token: string| null;
     userId: string| null;
-    userName: string| null;
-    isAuthenticated: boolean;
+    username: string| null;
+    authStatus: "checking" | "authenticated" | "unauthenticated";
 
-    login: (token: string, userId: string, userName: string ) => void;
+    login: (token: string, userId: string, username: string ) => void;
     logout: () => void;
+    setAuthenticatedUser: (user: MeResponse) => void;
+    setUnauthenticated: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -18,28 +25,45 @@ export const useAuthStore = create<AuthState>()(
         (set) =>({
             token: null,
             userId: null,
-            userName: null,
-            isAuthenticated: false,
+            username: null,
+            authStatus: "checking",
 
-            login:(token, userId, userName) =>
+            login:(token, userId, username) =>
                 set({
                     token, 
                     userId,
-                    userName,
-                    isAuthenticated: true
+                    username,
+                }),
+            
+            setAuthenticatedUser:(user) => 
+                set({
+                    
+                    userId: user.userId,
+                    username: user.username,
+                    authStatus: "authenticated"
+                }),
+                
+            setUnauthenticated: () => 
+                set({
+                    userId: null,
+                    username: null,
+                    authStatus: "unauthenticated"
                 }),
 
             logout:()=>
                 set({
                     token: null,
                     userId: null,
-                    userName: null,
-                    isAuthenticated: false
+                    username: null,
                 }),
         }),
 
         {
-            name: "auth-storage"
+            name: "auth-storage",
+            partialize: (state) => ({
+                userId: state.userId,
+                userName: state.username
+            })
         }
     )
 )

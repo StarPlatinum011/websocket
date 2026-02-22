@@ -10,4 +10,5 @@ router.get("/", (req, res) => {
   res.json({ message: "Auth route" });
 })
 
+
 export default router;

@@ -12,8 +12,7 @@
     "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-        "types": ["node"]                         // Include Node.js types
-
+    "types": ["node"],                         // Include Node.js types
   },
   "include": ["src/**/*", "prisma.config.ts"],
   "exclude": ["node_modules", "dist"]
