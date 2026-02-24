@@ -19,7 +19,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
   const addMessage = useChatStore((state) => state.addMessage);
   const updateRoomLastMessage = useChatStore((state) => state.updateRoomLastMessage);
   const wsSend = useChatStore((state) => state.wsSend);
-  const fetchRooms = useChatStore((state)=> state.fetchRooms);
   
   //find selected room from rooms array
   const selectedRoom = rooms.find(r => r.id === roomId);
@@ -29,10 +28,13 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
 
   //Join room when component mounts
   useEffect(()=> {
-    if(roomId && wsSend) {
-      fetchRooms(roomId);
-      wsSend({ type: "JOIN_ROOM",payload:{roomId} });
-    }
+    if(!roomId || !wsSend) return;
+
+    wsSend({ 
+      type: "JOIN_ROOM",
+      payload:{roomId} 
+    });
+    
 
     return() => {
       if(roomId && wsSend) {

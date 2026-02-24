@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { Message, Room, OutgoingWebSocketMessage } from '../types/chat.types';
 import { fetchRoomsFromServer } from "@/features/services/rooms";
+import { AuthToken } from "@/types/ids";
 
 
 interface ChatState {
@@ -27,7 +28,7 @@ interface ChatState {
     setJoinRoomModalOpen: (open: boolean) => void;
     addRoom: (room: Room) => void;
     removeRoom: (roomId: string) => void;
-    fetchRooms: (token: string) => Promise<void>;
+    fetchRooms: (token: AuthToken) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -76,9 +77,10 @@ export const useChatStore = create<ChatState>((set) => ({
     })),
 
   //fetch from backend 
-  fetchRooms: async (token:string) => {
+  fetchRooms: async (token:AuthToken) => {
     set({roomsLoading: true, roomsError: null});
     try {
+      console.log("TOKEN USED:", token)
       const rooms = await fetchRoomsFromServer(token);
       set({
         rooms : rooms.dms,

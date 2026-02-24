@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, EyeOff, Eye } from "lucide-react";
-
+import { AuthToken, UserId } from "@/types/ids";
 interface FormData {
   email: string;
   password: string;
@@ -77,10 +77,14 @@ const LoginPage = () => {
             }
 
             const data = await response.json();
+            const token = data.token as AuthToken; //Explicit type for confusing types
+            const userId = data.userId as UserId;
 
             // Store in auth store
-            login(data.token, data.userId, data.username);
+            login( token, userId, data.username );
 
+            console.log("Almost at login");
+            
             //Redirect to main page
             navigate('/');
         } catch (err: Error | unknown) {

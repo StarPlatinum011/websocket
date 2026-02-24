@@ -8,9 +8,9 @@ interface ProtectecRouteProps {
 
 const ProtectedRoute: React.FC<ProtectecRouteProps> = ({children}) => {
     
-    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const isAuthenticated = useAuthStore((state) => state.authStatus);
 
-    if(!isAuthenticated) {
+    if(isAuthenticated !== "authenticated") {
         return <Navigate to="/login" replace />
     }
     

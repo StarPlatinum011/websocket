@@ -18,7 +18,7 @@ export const Sidebar = () => {
   const clearUnread = useChatStore((state) => state.clearUnread);
   const wsSend = useChatStore((state)=> state.wsSend);
   const logout = useAuthStore((state) => state.logout);
-  const username = useAuthStore((state) => state.userName);
+  const username = useAuthStore((state) => state.username);
   const setJoinRoomModalOpen = useChatStore((state)=> state.setJoinRoomModalOpen)
 
   const navigate = useNavigate()
@@ -34,6 +34,8 @@ export const Sidebar = () => {
   }
   //Handle room selection
   const handleRoomSelect = (room: Room) => {
+
+
     selectRoom(room.id);
     clearUnread(room.id);
     

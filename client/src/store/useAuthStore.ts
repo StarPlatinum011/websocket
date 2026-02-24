@@ -1,19 +1,20 @@
+import { AuthToken, UserId } from "@/types/ids";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface MeResponse {
-    userId: string
+    userId: UserId
     username: string
     userEmail?: string
 }
 
 interface AuthState {
-    token: string| null;
-    userId: string| null;
+    token: AuthToken | null;
+    userId: UserId | null;
     username: string| null;
     authStatus: "checking" | "authenticated" | "unauthenticated";
 
-    login: (token: string, userId: string, username: string ) => void;
+    login: (token: AuthToken, userId: UserId, username: string ) => void;
     logout: () => void;
     setAuthenticatedUser: (user: MeResponse) => void;
     setUnauthenticated: () => void;
