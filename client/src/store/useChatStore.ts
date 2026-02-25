@@ -80,7 +80,6 @@ export const useChatStore = create<ChatState>((set) => ({
   fetchRooms: async (token:AuthToken) => {
     set({roomsLoading: true, roomsError: null});
     try {
-      console.log("TOKEN USED:", token)
       const rooms = await fetchRoomsFromServer(token);
       set({
         rooms : rooms.dms,

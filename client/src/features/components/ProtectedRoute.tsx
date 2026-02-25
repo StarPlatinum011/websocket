@@ -10,6 +10,10 @@ const ProtectedRoute: React.FC<ProtectecRouteProps> = ({children}) => {
     
     const isAuthenticated = useAuthStore((state) => state.authStatus);
 
+    if(isAuthenticated === 'checking') {
+        return <div>Loading ... pr</div>
+    }
+
     if(isAuthenticated !== "authenticated") {
         return <Navigate to="/login" replace />
     }

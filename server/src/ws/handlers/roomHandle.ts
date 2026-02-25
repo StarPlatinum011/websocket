@@ -10,7 +10,7 @@ export const handleJoinRoom = async(
     try {
     await assertRoomMembership(ws.userId, roomId);
     attachSocketToRoom(roomId, ws);
-    ws.send(JSON.stringify({type: 'JOIN_ROOM', roomId}));
+    ws.send(JSON.stringify({type: 'JOIN_ROOM',userId: ws.userId,  roomId}));
 
     
   } catch {

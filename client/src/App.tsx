@@ -24,7 +24,7 @@ function App() {
 
     async function bootstrap() {
       if(!token) {
-        logout();
+        setUnAuthenticatedUser();
         return;
       }
 
@@ -48,7 +48,7 @@ function App() {
 
       } catch (err) {
         console.log("Error on bootstrapping: ", err);
-        setUnAuthenticatedUser();
+        logout();
       }
     }
 

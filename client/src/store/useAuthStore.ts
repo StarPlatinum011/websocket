@@ -29,12 +29,22 @@ export const useAuthStore = create<AuthState>()(
             username: null,
             authStatus: "checking",
 
-            login:(token, userId, username) =>
+            login:(token, userId, username) =>{
+
+                console.log("LOGIN ACTION CALLED:", {
+                    token,
+                    userId,
+                    username,
+                    tokenType: typeof token,
+                });
+                
                 set({
                     token, 
                     userId,
                     username,
-                }),
+                    authStatus: "authenticated"
+                });
+            },
             
             setAuthenticatedUser:(user) => 
                 set({
@@ -62,8 +72,7 @@ export const useAuthStore = create<AuthState>()(
         {
             name: "auth-storage",
             partialize: (state) => ({
-                userId: state.userId,
-                userName: state.username
+                token: state.token
             })
         }
     )

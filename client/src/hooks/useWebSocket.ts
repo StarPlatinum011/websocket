@@ -31,14 +31,12 @@ export const useWebSocket = (url: string, token: string) => {
 
     //Connection open
     socket.onopen = () => {
-      console.log("CLIENT: open");
       socket.send(JSON.stringify({ type: "PING"}));
       setWsStatus('Online');
     };
 
     //Connection close
     socket.onclose = (event) => {
-      console.log("CLIENT: close")
       setWsStatus('Offline');
 
        // If closed due to auth error
@@ -87,7 +85,7 @@ export const useWebSocket = (url: string, token: string) => {
           break;
 
         case "JOIN_ROOM":
-          console.log(`${data.username} joined ${data.roomId}`);
+          console.log(`${data.userId} joined ${data.roomId}`);
           break;
 
         case "LEAVE_ROOM":

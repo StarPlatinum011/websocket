@@ -7,12 +7,12 @@ export const requireSession = async (req: Request, res: Response, next: NextFunc
 
     if(!token) return res.status(401).json({ error: 'No session token provided' })
 
-        console.log("session token: ", token);
+        // console.log("session token: ", token);
         
         
         try {
             const session = await validateSession(token);
-            console.log("session session: ", session);
+            // console.log("session session: ", session);
             //attach userId and sessionId to req for downstream handlers
             req.userId = session.userId;
             req.sessionId = session.id

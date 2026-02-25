@@ -56,42 +56,42 @@ const LoginPage = () => {
       return Object.keys(newErrors).length === 0;
     }
 
+
     const handleSubmit = async (e:React.FormEvent) => {
-        e.preventDefault();
-        if(!validateForm()) return;
-        setLoading(true);
+      e.preventDefault();
+      if(!validateForm()) return;
+      setLoading(true);
 
-        try {
-            const response = await fetch("http://localhost:3000/api/auth/login", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify({ 
-                  email: formData.email,
-                  password: formData.password
-                 })
-            });
+      try {
+        const response = await fetch("http://localhost:3000/api/auth/login", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+              email: formData.email,
+              password: formData.password
+              })
+        });
 
-            if(!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || "Login failed");
-            }
-
+        if(!response.ok) {
             const data = await response.json();
-            const token = data.token as AuthToken; //Explicit type for confusing types
-            const userId = data.userId as UserId;
-
-            // Store in auth store
-            login( token, userId, data.username );
-
-            console.log("Almost at login");
-            
-            //Redirect to main page
-            navigate('/');
-        } catch (err: Error | unknown) {
-            const message = err instanceof Error ? err.message : 'An unknown error occurred';
-            console.log("Invalid credentials: ", message);
-            setErrors({ general: 'Invalid email or password' });
+            throw new Error(data.error || "Login failed");
         }
+
+        const data = await response.json();
+        const token = data.token as AuthToken; //Explicit type for confusing types casting
+        const userId = data.userId as UserId;
+
+        // Store in auth store
+        login( token, userId, data.username );
+
+        
+        //Redirect to main page
+        navigate('/');
+      } catch (err: Error | unknown) {
+          const message = err instanceof Error ? err.message : 'An unknown error occurred';
+          console.log("Invalid credentials: ", message);
+          setErrors({ general: 'Invalid email or password' });
+      }
     }
 
     return (
