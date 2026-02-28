@@ -16,15 +16,23 @@ function App() {
   const roomsError = useChatStore((state) => state.roomsError);
   const { sendMessage } = useWebSocket('ws://localhost:3000', token || '');
   const logout = useAuthStore((state) => state.logout);
-  const setAuthenticatedUser = useAuthStore((state) => state.setAuthenticatedUser);
-  const setUnAuthenticatedUser = useAuthStore((state) => state.setUnauthenticated);
-  
-  //Store send function on Zustand store
+  const setUnauthenticatedUser = useAuthStore((state) => state.setUnauthenticatedUser);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+    
+  console.log("Auth store",useAuthStore.getState());
+  console.log("Token : ", token);
+
+
+  //Check authentication with backend: 
   useEffect(()=> {
 
     async function bootstrap() {
+
+      //check if hydration has finished
+      if(!hasHydrated) return;
+
       if(!token) {
-        setUnAuthenticatedUser();
+        setUnauthenticatedUser();
         return;
       }
 
@@ -37,9 +45,8 @@ function App() {
         
         if (!response) throw new Error("Unauthorize");
 
-        const user = await response.json();
-        //rehydrate the user details in store
-        setAuthenticatedUser(user);
+        // token is valid so authenticated for protected route
+        useAuthStore.setState({ authStatus: "authenticated" })
 
         fetchRooms(token);
         //Storing sendMessage in the zustand to prevent prop drilling
@@ -54,7 +61,7 @@ function App() {
 
     bootstrap();
     
-  }, [ token ])
+  }, [ hasHydrated, token ])
 
   if(roomsLoading) {
     return (

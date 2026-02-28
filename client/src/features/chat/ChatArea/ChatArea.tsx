@@ -45,7 +45,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
 
 
   if (!roomId) {
-    return <div>Loading...</div>;
+    return <EmptyState />;
   }
 
 

@@ -89,8 +89,8 @@ const LoginPage = () => {
         navigate('/');
       } catch (err: Error | unknown) {
           const message = err instanceof Error ? err.message : 'An unknown error occurred';
-          console.log("Invalid credentials: ", message);
-          setErrors({ general: 'Invalid email or password' });
+          console.log("Something went wrong: ", message);
+          setErrors({ general: 'Something went wrong' });
       }
     }
 
@@ -190,7 +190,7 @@ const LoginPage = () => {
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={loading}
+              // disabled={loading}
               className="w-full bg-[#00A7E1] hover:bg-[#0090C4] text-white font-medium py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00A7E1] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? (

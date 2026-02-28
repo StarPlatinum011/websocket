@@ -40,7 +40,7 @@ export const useChatStore = create<ChatState>((set) => ({
       { id: '3', name: 'Sarah Wilson',type: 'DM',  lastMessage: 'Thanks for the help!', timestamp: '3h ago', unread: 1 },
   ],
   messages:{
-      '1': [
+      'sss': [
           { id: 'm1', userId: '2', username: 'John Doe', content: 'Hey everyone!', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
           { id: 'm2', userId: 'me', username: 'You', content: 'Hi John!', timestamp: new Date(Date.now() - 3000000).toISOString(), isMine: true },
           { id: 'm3', userId: '3', username: 'Jane Smith', content: 'See you tomorrow!', timestamp: new Date(Date.now() - 120000).toISOString(), isMine: false },
@@ -48,7 +48,7 @@ export const useChatStore = create<ChatState>((set) => ({
       '2': [
           { id: 'm4', userId: '4', username: 'Mike Johnson', content: 'Updated the docs', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
       ],
-      '3': [
+      'Kusum Pun': [
           { id: 'm5', userId: '3', username: 'Sarah Wilson', content: 'Can you help me with this?', timestamp: new Date(Date.now() - 7200000).toISOString(), isMine: false },
           { id: 'm6', userId: 'me', username: 'You', content: 'Sure, what do you need?', timestamp: new Date(Date.now() - 7000000).toISOString(), isMine: true },
           { id: 'm7', userId: '3', username: 'Sarah Wilson', content: 'Thanks for the help!', timestamp: new Date(Date.now() - 10800000).toISOString(), isMine: false },

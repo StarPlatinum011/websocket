@@ -14,7 +14,7 @@ const ProtectedRoute: React.FC<ProtectecRouteProps> = ({children}) => {
         return <div>Loading ... pr</div>
     }
 
-    if(isAuthenticated !== "authenticated") {
+    if(isAuthenticated === "unauthenticated") {
         return <Navigate to="/login" replace />
     }
     

@@ -2,22 +2,17 @@ import { AuthToken, UserId } from "@/types/ids";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface MeResponse {
-    userId: UserId
-    username: string
-    userEmail?: string
-}
 
 interface AuthState {
     token: AuthToken | null;
     userId: UserId | null;
     username: string| null;
     authStatus: "checking" | "authenticated" | "unauthenticated";
+    hasHydrated: boolean;
 
     login: (token: AuthToken, userId: UserId, username: string ) => void;
     logout: () => void;
-    setAuthenticatedUser: (user: MeResponse) => void;
-    setUnauthenticated: () => void;
+    setUnauthenticatedUser: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -28,16 +23,10 @@ export const useAuthStore = create<AuthState>()(
             userId: null,
             username: null,
             authStatus: "checking",
+            hasHydrated: false,
 
-            login:(token, userId, username) =>{
 
-                console.log("LOGIN ACTION CALLED:", {
-                    token,
-                    userId,
-                    username,
-                    tokenType: typeof token,
-                });
-                
+            login:(token, userId, username) =>{                
                 set({
                     token, 
                     userId,
@@ -45,17 +34,10 @@ export const useAuthStore = create<AuthState>()(
                     authStatus: "authenticated"
                 });
             },
-            
-            setAuthenticatedUser:(user) => 
-                set({
-                    
-                    userId: user.userId,
-                    username: user.username,
-                    authStatus: "authenticated"
-                }),
                 
-            setUnauthenticated: () => 
+            setUnauthenticatedUser: () => 
                 set({
+                    token: null,
                     userId: null,
                     username: null,
                     authStatus: "unauthenticated"
@@ -66,14 +48,24 @@ export const useAuthStore = create<AuthState>()(
                     token: null,
                     userId: null,
                     username: null,
+                    authStatus: "unauthenticated"
                 }),
+
         }),
+        
 
         {
             name: "auth-storage",
             partialize: (state) => ({
-                token: state.token
-            })
+                token: state.token,
+                userId: state.userId,
+                username: state.username
+            }),
+            onRehydrateStorage(state) {
+                if (!state) return;
+
+                state.hasHydrated = true;
+            },
         }
     )
 )

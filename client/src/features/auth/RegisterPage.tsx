@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import { AuthToken, UserId } from '@/types/ids';
 
 interface FormData {
   name: string;
@@ -74,7 +75,7 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
     
     if (!validateForm()) return;
-    
+  
     setLoading(true);
     
     try {
@@ -95,10 +96,15 @@ const RegisterPage: React.FC = () => {
 
       // response data from backend 
       const data = await response.json();
+      const userId = data.userId as UserId;
+      const token = data.token as AuthToken;
 
       // Attach token and other state to store
-      login(data.token, data.userId, data.username);
-      navigate('/');
+      login(token, userId, data.username);
+
+      Promise.resolve().then(()=> {
+        navigate('/');
+      })
       
     } catch (err) {
       console.log("Error: ", err);
