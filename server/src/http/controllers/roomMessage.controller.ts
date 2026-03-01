@@ -7,13 +7,17 @@ interface RoomMessageBody  {
 
 //GET /api/rooms/:roomId/messages/
 export const getRoomMessages = async (req: Request, res: Response) => {
-  const userId = req.userId;
-  const { roomId } = req.params;
+  const  roomId  = req.params.roomId.trim();
+  const userId = req.userId?.trim();
 
+  
+  // console.log("Room Message, ", userId, " and roomId: ", roomId);
+  
   //  Validate membership
   const isMember = await prisma.roomMember.findFirst({
     where: { roomId, userId }
   });
+
 
   if (!isMember) {
     return res.status(403).json({ error: "Not a room member" });
@@ -22,11 +26,22 @@ export const getRoomMessages = async (req: Request, res: Response) => {
   // Fetch messages
   const messages = await prisma.message.findMany({
     where: { roomId },
+    include: {sender: true},
     orderBy: { createdAt: "asc" },
     take: 50 
   });
 
-  res.json(messages);
+  const formattedMessage = messages.map(msg => ({
+    id: msg.id,
+    userId: msg.senderId,
+    username: msg.sender.username,
+    content: msg.content,
+    timestamp: msg.createdAt,
+    isMine: userId === msg.senderId
+
+  }));
+  
+  res.send(formattedMessage);
 };
 
 

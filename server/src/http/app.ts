@@ -22,7 +22,7 @@ export const createHttpApp = ():Express => {
   app.use("/api/auth", auth);
   // app.use("/api/rooms", rooms)
   app.use("/api/dms",requireSession, dms)
-  app.use('/api/rooms/:roomId/messages', roomMessages);
+  app.use('/api/rooms/:roomId/messages',requireSession, roomMessages);
   
   app.get("/api/me", requireSession, async (req: Request, res) => {
     const userId = req.userId; 

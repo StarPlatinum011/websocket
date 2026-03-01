@@ -5,6 +5,8 @@ import { ChatHeader } from "./ChatHeader";
 import { EmptyState } from "./EmptyState";
 import { MessageInput } from "./MessageInput";
 import { MessagesList } from "./MessageList";
+import { RoomId } from "@/types/ids";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface ChatAreaProps {
   onBack?: () => void;
@@ -12,28 +14,28 @@ interface ChatAreaProps {
 
 export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
 
-  const { roomId } = useParams<{ roomId: string }>();
+  const { roomId } = useParams<{ roomId: RoomId }>();
 
   const rooms = useChatStore((state) => state.rooms);
   const messages = useChatStore((state) => state.messages);
   const addMessage = useChatStore((state) => state.addMessage);
   const updateRoomLastMessage = useChatStore((state) => state.updateRoomLastMessage);
   const wsSend = useChatStore((state) => state.wsSend);
+  const fetchRoomMessages = useChatStore((state) => state.fetchRoomMessages);
+  const authState = useAuthStore((state) => state.authStatus)
   
-  //find selected room from rooms array
-  const selectedRoom = rooms.find(r => r.id === roomId);
-
-  //get the messages for this room
-  const roomMessages = roomId? messages[roomId] || [] : [];
 
   //Join room when component mounts
   useEffect(()=> {
+    if(authState !== "authenticated") return;
     if(!roomId || !wsSend) return;
 
     wsSend({ 
       type: "JOIN_ROOM",
       payload:{roomId} 
     });
+
+    fetchRoomMessages(roomId)
     
 
     return() => {
@@ -41,8 +43,16 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
         wsSend({type: "LEVAE_ROOM", payload:{roomId}})
       }
     }
-  }, [roomId, wsSend])
+  }, [roomId, wsSend, authState])
 
+    //find selected room from rooms array
+  const selectedRoom = rooms.find(r => r.id === roomId);
+
+  //get the messages for this room
+  const roomMessages = roomId? messages[roomId] || [] : [];
+
+  console.log("This is room message: ", roomMessages);
+  
 
   if (!roomId) {
     return <EmptyState />;

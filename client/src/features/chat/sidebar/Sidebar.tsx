@@ -23,7 +23,6 @@ export const Sidebar = () => {
 
   const navigate = useNavigate()
 
-  console.log("username: ", username);
   
   
   const filteredRooms = rooms.filter(room =>

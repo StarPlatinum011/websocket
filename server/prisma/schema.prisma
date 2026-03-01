@@ -39,7 +39,6 @@ model Room {
 
 model RoomMember {
   id          String       @id @default(uuid())
-  // roomName    String?
   userId      String
   roomId      String 
   lastSeenAt  DateTime     @default(now())

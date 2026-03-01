@@ -19,8 +19,6 @@ function App() {
   const setUnauthenticatedUser = useAuthStore((state) => state.setUnauthenticatedUser);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
     
-  console.log("Auth store",useAuthStore.getState());
-  console.log("Token : ", token);
 
 
   //Check authentication with backend: 

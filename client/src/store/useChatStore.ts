@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { Message, Room, OutgoingWebSocketMessage } from '../types/chat.types';
-import { fetchRoomsFromServer } from "@/features/services/rooms";
-import { AuthToken } from "@/types/ids";
+import { fetchRoomMessages, fetchRoomsFromServer } from "@/features/services/rooms";
+import { AuthToken, RoomId } from "@/types/ids";
+import { useAuthStore } from "./useAuthStore";
 
 
 interface ChatState {
@@ -29,6 +30,7 @@ interface ChatState {
     addRoom: (room: Room) => void;
     removeRoom: (roomId: string) => void;
     fetchRooms: (token: AuthToken) => Promise<void>;
+    fetchRoomMessages: (roomId: RoomId) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -40,7 +42,7 @@ export const useChatStore = create<ChatState>((set) => ({
       { id: '3', name: 'Sarah Wilson',type: 'DM',  lastMessage: 'Thanks for the help!', timestamp: '3h ago', unread: 1 },
   ],
   messages:{
-      'sss': [
+      '1': [
           { id: 'm1', userId: '2', username: 'John Doe', content: 'Hey everyone!', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
           { id: 'm2', userId: 'me', username: 'You', content: 'Hi John!', timestamp: new Date(Date.now() - 3000000).toISOString(), isMine: true },
           { id: 'm3', userId: '3', username: 'Jane Smith', content: 'See you tomorrow!', timestamp: new Date(Date.now() - 120000).toISOString(), isMine: false },
@@ -48,7 +50,7 @@ export const useChatStore = create<ChatState>((set) => ({
       '2': [
           { id: 'm4', userId: '4', username: 'Mike Johnson', content: 'Updated the docs', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
       ],
-      'Kusum Pun': [
+      '3': [
           { id: 'm5', userId: '3', username: 'Sarah Wilson', content: 'Can you help me with this?', timestamp: new Date(Date.now() - 7200000).toISOString(), isMine: false },
           { id: 'm6', userId: 'me', username: 'You', content: 'Sure, what do you need?', timestamp: new Date(Date.now() - 7000000).toISOString(), isMine: true },
           { id: 'm7', userId: '3', username: 'Sarah Wilson', content: 'Thanks for the help!', timestamp: new Date(Date.now() - 10800000).toISOString(), isMine: false },
@@ -95,6 +97,48 @@ export const useChatStore = create<ChatState>((set) => ({
     }
   },
 
+  // Message Actions
+  //Exec this fn when adding new msg to room 
+  addMessage: (roomId, message) => 
+    set((state) =>{
+      return { 
+        messages: {
+          ...state.messages,
+          [roomId]: [
+            ...(state.messages[roomId] || []),
+            message
+          ]
+        }
+      }
+    }),
+
+  //Exec this fn when loading initial room msg
+  setMessages: (roomId, messages) => 
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [roomId]: messages
+      }
+    })),
+
+  //fetch room message from backend
+  fetchRoomMessages: async (roomId: RoomId ) => {
+    
+    const token = useAuthStore.getState().token; 
+    if(!token) throw new Error("No auth token available")
+
+    const messages = await fetchRoomMessages(token, roomId);
+
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [roomId]: messages
+      }
+    }))
+  },
+
+
+  //Extra helper actions
   updateRoomLastMessage: (roomId, content) => 
   set((state) => {
     const updateUnreadRooms = state.rooms.map(stateRoom => {
@@ -121,29 +165,6 @@ export const useChatStore = create<ChatState>((set) => ({
       return { rooms: updatedRooms }
     }),
 
-  // Message Actions
-  //Exec this fn when adding new msg to room 
-  addMessage: (roomId, message) => 
-    set((state) =>{
-      return { 
-        messages: {
-          ...state.messages,
-          [roomId]: [
-            ...(state.messages[roomId] || []),
-            message
-          ]
-        }
-      }
-    }),
-
-  //Exec this fn when loading initial room msg
-  setMessages: (roomId, messages) => 
-    set((state) => ({
-      messages: {
-        ...state.messages,
-        [roomId]: messages
-      }
-    })),
   
   
   setWsStatus: (status) => set({ wsStatus: status }),
