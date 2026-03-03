@@ -32,15 +32,15 @@ export const getRoomMessages = async (req: Request, res: Response) => {
   });
 
   const formattedMessage = messages.map(msg => ({
-    id: msg.id,
-    userId: msg.senderId,
-    username: msg.sender.username,
+    id: msg.id, // message Id
+    userId: msg.senderId, // current user
+    username: msg.sender.username, //another user
     content: msg.content,
     timestamp: msg.createdAt,
-    isMine: userId === msg.senderId
 
   }));
-  
+
+
   res.send(formattedMessage);
 };
 

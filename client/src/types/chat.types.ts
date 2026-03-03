@@ -20,7 +20,6 @@ export interface Message {
   username: string;
   content: string;
   timestamp: string;
-  isMine: boolean;
 }
 
 export interface OutgoingWebSocketMessage {

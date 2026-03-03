@@ -20,7 +20,7 @@ interface ChatState {
     // Actions
     setRooms: (rooms: Room[]) => void;
     addMessage: (roomId: string, message: Message) => void;
-    setMessages: (roomId: string, messages: Message[]) => void;
+    clearAll: () => void;
     selectRoom: (roomId: string | null) => void;
     setWsStatus: (status: 'Online' | 'Offline') => void;
     updateRoomLastMessage: (roomId: string, content: string) => void;
@@ -43,17 +43,17 @@ export const useChatStore = create<ChatState>((set) => ({
   ],
   messages:{
       '1': [
-          { id: 'm1', userId: '2', username: 'John Doe', content: 'Hey everyone!', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
-          { id: 'm2', userId: 'me', username: 'You', content: 'Hi John!', timestamp: new Date(Date.now() - 3000000).toISOString(), isMine: true },
-          { id: 'm3', userId: '3', username: 'Jane Smith', content: 'See you tomorrow!', timestamp: new Date(Date.now() - 120000).toISOString(), isMine: false },
+          { id: 'm1', userId: '2', username: 'John Doe', content: 'Hey everyone!', timestamp: new Date(Date.now() - 3600000).toISOString() },
+          { id: 'm2', userId: 'me', username: 'You', content: 'Hi John!', timestamp: new Date(Date.now() - 3000000).toISOString() },
+          { id: 'm3', userId: '3', username: 'Jane Smith', content: 'See you tomorrow!', timestamp: new Date(Date.now() - 120000).toISOString()},
       ],
       '2': [
-          { id: 'm4', userId: '4', username: 'Mike Johnson', content: 'Updated the docs', timestamp: new Date(Date.now() - 3600000).toISOString(), isMine: false },
+          { id: 'm4', userId: '4', username: 'Mike Johnson', content: 'Updated the docs', timestamp: new Date(Date.now() - 3600000).toISOString() },
       ],
       '3': [
-          { id: 'm5', userId: '3', username: 'Sarah Wilson', content: 'Can you help me with this?', timestamp: new Date(Date.now() - 7200000).toISOString(), isMine: false },
-          { id: 'm6', userId: 'me', username: 'You', content: 'Sure, what do you need?', timestamp: new Date(Date.now() - 7000000).toISOString(), isMine: true },
-          { id: 'm7', userId: '3', username: 'Sarah Wilson', content: 'Thanks for the help!', timestamp: new Date(Date.now() - 10800000).toISOString(), isMine: false },
+          { id: 'm5', userId: '3', username: 'Sarah Wilson', content: 'Can you help me with this?', timestamp: new Date(Date.now() - 7200000).toISOString() },
+          { id: 'm6', userId: 'me', username: 'You', content: 'Sure, what do you need?', timestamp: new Date(Date.now() - 7000000).toISOString() },
+          { id: 'm7', userId: '3', username: 'Sarah Wilson', content: 'Thanks for the help!', timestamp: new Date(Date.now() - 10800000).toISOString() },
       ],
   },
   selectedRoomId: null,
@@ -62,6 +62,8 @@ export const useChatStore = create<ChatState>((set) => ({
   isJoinRoomModalOpen: false,
   roomsLoading: false,
   roomsError: null,
+
+
 
   // Room Actions 
   setRooms: (rooms) => set({ rooms }),
@@ -83,6 +85,7 @@ export const useChatStore = create<ChatState>((set) => ({
     set({roomsLoading: true, roomsError: null});
     try {
       const rooms = await fetchRoomsFromServer(token);
+      
       set({
         rooms : rooms.dms,
         roomsLoading: false
@@ -105,21 +108,14 @@ export const useChatStore = create<ChatState>((set) => ({
         messages: {
           ...state.messages,
           [roomId]: [
-            ...(state.messages[roomId] || []),
+            ...(state.messages[roomId] || []), //this is how we append the new message in previous one
             message
           ]
         }
       }
     }),
 
-  //Exec this fn when loading initial room msg
-  setMessages: (roomId, messages) => 
-    set((state) => ({
-      messages: {
-        ...state.messages,
-        [roomId]: messages
-      }
-    })),
+  
 
   //fetch room message from backend
   fetchRoomMessages: async (roomId: RoomId ) => {
@@ -128,14 +124,16 @@ export const useChatStore = create<ChatState>((set) => ({
     if(!token) throw new Error("No auth token available")
 
     const messages = await fetchRoomMessages(token, roomId);
+      console.log("Messages: ", messages);
 
     set((state) => ({
       messages: {
         ...state.messages,
-        [roomId]: messages
+        [roomId]: messages  // replace the entire object with backend truth
       }
     }))
   },
+
 
 
   //Extra helper actions
@@ -175,5 +173,9 @@ export const useChatStore = create<ChatState>((set) => ({
 
   setJoinRoomModalOpen: (open) => set({isJoinRoomModalOpen: open}),
   
-  
+    clearAll: () => set({
+      messages:{},
+      rooms:[]
+    }),
+
 }));

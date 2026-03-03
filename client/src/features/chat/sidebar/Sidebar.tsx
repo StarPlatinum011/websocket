@@ -20,6 +20,7 @@ export const Sidebar = () => {
   const logout = useAuthStore((state) => state.logout);
   const username = useAuthStore((state) => state.username);
   const setJoinRoomModalOpen = useChatStore((state)=> state.setJoinRoomModalOpen)
+  const clearAll = useChatStore((state) => state.clearAll)
 
   const navigate = useNavigate()
 
@@ -30,7 +31,9 @@ export const Sidebar = () => {
   );
 
   const handleLogout = () => {
+    clearAll(); 
     logout();
+    
     navigate('/login')
   }
   //Handle room selection

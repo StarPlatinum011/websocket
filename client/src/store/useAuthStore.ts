@@ -1,6 +1,7 @@
 import { AuthToken, UserId } from "@/types/ids";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useChatStore } from "./useChatStore";
 
 
 interface AuthState {
@@ -43,13 +44,14 @@ export const useAuthStore = create<AuthState>()(
                     authStatus: "unauthenticated"
                 }),
 
-            logout:()=>
+            logout:()=>{
                 set({
                     token: null,
                     userId: null,
                     username: null,
                     authStatus: "unauthenticated"
-                }),
+                })                
+            },
 
         }),
         
