@@ -17,13 +17,26 @@ export const  handleSendMessage = async (
             roomId: payload.roomId,
             senderId: ws.userId,
             content: payload.content
-        }
-    })
+        }, 
+        include:{ sender: true}
+    });
+
+    // Data shape for backend (Data Transfer Object// Data shape for transport layer aka websocket)
+    const dto = {
+        id: message.id,
+        roomId: message.roomId,
+        userId: message.senderId,
+        username: message.sender.username,
+        content: message.content,
+        timestamp: message.createdAt,
+        tempId: payload.tempId
+    }
 
     // Side effect - Real time
     broadcastToRoom(payload.roomId, {
         type: "NEW_MESSAGE",
-        payload: message
+        payload: dto,
+        
     });
 
 }

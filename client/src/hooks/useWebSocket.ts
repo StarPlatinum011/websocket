@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import { IncomingWebSocketMessage, OutgoingWebSocketMessage } from "../types/chat.types";
+import { OutgoingWebSocketMessage, ServerMessage } from "../types/chat.types";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -12,7 +12,7 @@ export const useWebSocket = (url: string, token: string) => {
   const logout = useAuthStore((state)=> state.logout );
   const setWsStatus = useChatStore((state) => state.setWsStatus);
   const addMessage = useChatStore((state) => state.addMessage);
-  // const setRooms = useChatStore((state) => state.setRooms)
+  const setRooms = useChatStore((state) => state.setRooms)
 
   useEffect(() => {
 
@@ -48,8 +48,8 @@ export const useWebSocket = (url: string, token: string) => {
 
     //handle on message
     socket.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      handleIncomingMessasge(data);
+      const msg = JSON.parse(e.data);
+      handleIncomingMessasge(msg);
     }
    
     //Error handle
@@ -67,41 +67,33 @@ export const useWebSocket = (url: string, token: string) => {
   }, [url, token]);
 
 
-  const handleIncomingMessasge = useCallback(( data: IncomingWebSocketMessage ) => {
+  const handleIncomingMessasge = useCallback(( data: ServerMessage ) => {
+console.log("From backend: ", data.payload);
 
     switch (data.type) {
         case "NEW_MESSAGE":
-          if(data.roomId && data.messageId && data.content) {
+          addMessage(data.payload.roomId, data.payload);
+          break;
 
-            addMessage(data.roomId, {
-              id: data.messageId,
-              userId: data.userId || "Unknown",
-              username: data.username || "Unknown User",
-              content: data.content,
-              timestamp: data.timestamp || new Date().toISOString(),
-              isMine:false
-            });
-          }
+        case "ROOM_LIST":
+          setRooms(data.payload)
           break;
 
         case "JOIN_ROOM":
-          console.log(`${data.userId} joined ${data.roomId}`);
+          console.log(`${data.payload.userId} joined ${data.payload.roomId}`);
           break;
-
+          
         case "LEAVE_ROOM":
-          console.log(`User left room: ${data.roomId}`);
+          console.log(`User left room: ${data.payload.roomId}`);
           break;
 
         case "ERROR":
-          console.log("Server Error: ", data.error);
-          //If error is auth related
-          if(data.error?.includes('session') || data.error?.includes('auth')) {
-            logout();
-          }
+          console.log("Server Error: ", data.payload);
+        
           break;
 
         default:
-          console.log("Unknown message type: ", data);
+          console.log("Unknown message type on ws: ", data);
           
       } 
   }, [addMessage, logout])

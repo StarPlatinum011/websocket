@@ -5,7 +5,8 @@ export const WSClientMessage = z.discriminatedUnion("type", [
         type: z.literal("SEND_MESSAGE"),
         payload: z.object({
             roomId: z.uuid(),
-            content: z.string().min(1).max(1000)
+            content: z.string().min(1).max(1000),
+            tempId: z.string()
         })
     }),
 

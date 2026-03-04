@@ -1,7 +1,6 @@
 import { AuthToken, UserId } from "@/types/ids";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { useChatStore } from "./useChatStore";
 
 
 interface AuthState {

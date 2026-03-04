@@ -22,8 +22,12 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
   const updateRoomLastMessage = useChatStore((state) => state.updateRoomLastMessage);
   const wsSend = useChatStore((state) => state.wsSend);
   const fetchRoomMessages = useChatStore((state) => state.fetchRoomMessages);
-  const authState = useAuthStore((state) => state.authStatus)
+  const authState = useAuthStore((state) => state.authStatus);
+  const username = useAuthStore((state) => state.username);
+  const userId = useAuthStore((state) => state.userId);
   
+
+    // console.log("UserId on refresh: ", userId);
 
   //Join room when component mounts
   useEffect(()=> {
@@ -65,16 +69,18 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
   }
 
 
+  const tempId = `temp-${crypto.randomUUID()}`
   const handleMessageSend = (content: string) => {
-    if(!roomId || !wsSend) return;
+    
+    if(!roomId || !userId || !username || !wsSend) return;
 
     const newMessage = {
-      id: `m${Date.now()}`,
-      userId: 'me',
-      username: 'You',
+      id: tempId,
+      userId,
+      username,
       content,
       timestamp: new Date().toISOString(),
-      isMine: true
+      status: 'sending' as const
     }
 
     //update UI asap
@@ -86,7 +92,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
       type: 'SEND_MESSAGE', 
       payload: {
         roomId, 
-        content
+        content,
+        tempId
       }
     });
 

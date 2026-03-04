@@ -20,6 +20,7 @@ export interface Message {
   username: string;
   content: string;
   timestamp: string;
+  status?: string
 }
 
 export interface OutgoingWebSocketMessage {
@@ -27,27 +28,25 @@ export interface OutgoingWebSocketMessage {
   payload: {
     roomId?: string;
     content?: string;
+    tempId?: string
   }
 }
 
-export interface IncomingWebSocketMessage {
-  type: 'SEND_MESSAGE' | 'JOIN_ROOM' | 'LEAVE_ROOM' | 'ROOM_LIST' | 'ERROR' | 'NEW_MESSAGE';
-  
-  // For NEW_MESSAGE
-  messageId?: string;
-  roomId?: string;
-  userId?: string;
-  username?: string;
-  content?: string;
-  timestamp?: string;
-  
-  // For USER_JOINED / USER_LEFT
-  userJoinedId?: string;
-  userJoinedName?: string;
-  
-  // For ROOM_LIST
-  rooms?: Room[];
-  
-  // For ERROR
-  error?: string;
+
+// Data transfer object
+export type ChatMessageDTO = {
+  id: string
+  roomId: string
+  userId: string
+  username: string
+  content: string
+  timestamp: string
+  tempId?: string
 }
+
+export type ServerMessage =
+  | { type: 'NEW_MESSAGE'; payload: ChatMessageDTO }
+  | { type: 'ROOM_LIST'; payload: Room[] }
+  | { type: 'JOIN_ROOM'; payload: ChatMessageDTO }
+  | { type: 'LEAVE_ROOM'; payload: ChatMessageDTO }
+  | { type: 'ERROR'; payload: { message: string } }

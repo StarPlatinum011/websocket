@@ -8,7 +8,7 @@ interface WSMessage <T = unknown> {
 
 export const broadcastToRoom = (
     roomId: string,
-    message: WSMessage 
+    message: WSMessage,
 ) => {
 
     //check if user is in the room-memory
@@ -16,6 +16,8 @@ export const broadcastToRoom = (
     if(!room) throw new Error("User is not allowed in the room.");
 
     const data = JSON.stringify(message);
+    console.log("Backend message", data);
+    
 
     for (const ws of room) {
         if(ws.readyState === WebSocket.OPEN) {
