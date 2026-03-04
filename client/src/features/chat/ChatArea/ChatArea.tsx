@@ -44,7 +44,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
 
     return() => {
       if(roomId && wsSend) {
-        wsSend({type: "LEVAE_ROOM", payload:{roomId}})
+        wsSend({type: "LEAVE_ROOM", payload:{roomId}})
       }
     }
   }, [roomId, wsSend, authState])

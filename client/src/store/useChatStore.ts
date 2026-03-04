@@ -173,9 +173,9 @@ export const useChatStore = create<ChatState>((set) => ({
 
   setJoinRoomModalOpen: (open) => set({isJoinRoomModalOpen: open}),
   
-    clearAll: () => set({
-      messages:{},
-      rooms:[]
-    }),
+  clearAll: () => set({
+    messages:{},
+    rooms:[]
+  }),
 
 }));

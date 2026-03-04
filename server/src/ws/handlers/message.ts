@@ -21,7 +21,6 @@ export const handleMessage = async (ws: AuthenticatedWS, data: RawData) => {
   }
 
   const parsed = WSClientMessage.safeParse(payload);
-  // console.log('This is message area: ', parsed)
 
     if (!parsed.success) {
           // console.error("Zod error:", parsed.treeifyError(error));

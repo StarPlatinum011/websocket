@@ -24,7 +24,7 @@ export interface Message {
 }
 
 export interface OutgoingWebSocketMessage {
-  type: 'SEND_MESSAGE' | 'JOIN_ROOM' | 'LEVAE_ROOM';
+  type: 'SEND_MESSAGE' | 'JOIN_ROOM' | 'LEAVE_ROOM';
   payload: {
     roomId?: string;
     content?: string;
@@ -47,6 +47,6 @@ export type ChatMessageDTO = {
 export type ServerMessage =
   | { type: 'NEW_MESSAGE'; payload: ChatMessageDTO }
   | { type: 'ROOM_LIST'; payload: Room[] }
-  | { type: 'JOIN_ROOM'; payload: ChatMessageDTO }
-  | { type: 'LEAVE_ROOM'; payload: ChatMessageDTO }
+  | { type: 'JOIN_ROOM'; roomId: string; userId: string }
+  | { type: 'LEAVE_ROOM'; roomId: string }
   | { type: 'ERROR'; payload: { message: string } }

@@ -68,10 +68,11 @@ export const useWebSocket = (url: string, token: string) => {
 
 
   const handleIncomingMessasge = useCallback(( data: ServerMessage ) => {
-console.log("From backend: ", data.payload);
+// console.log("From backend: ", data.payload);
 
     switch (data.type) {
         case "NEW_MESSAGE":
+
           addMessage(data.payload.roomId, data.payload);
           break;
 
@@ -80,11 +81,11 @@ console.log("From backend: ", data.payload);
           break;
 
         case "JOIN_ROOM":
-          console.log(`${data.payload.userId} joined ${data.payload.roomId}`);
+          console.log(`${data.userId} joined ${data.roomId}`);
           break;
           
         case "LEAVE_ROOM":
-          console.log(`User left room: ${data.payload.roomId}`);
+          console.log(`User left room: ${data.roomId}`);
           break;
 
         case "ERROR":

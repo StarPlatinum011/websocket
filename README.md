@@ -2,7 +2,7 @@
 React frontend
 REST for auth + CRUD
 WebSockets for realtime
-Postgres or SQLite for DB
+Postgres  for DB
 Prisma for ORM
 Splunk for logs
 
@@ -10,7 +10,7 @@ Splunk for logs
 src/
 ├─ server.ts        ← bootstraps everything
 ├─ http/
-│   ├─ app.ts       ← Express/Fastify app
+│   ├─ app.ts       ← Express app
 │   ├─ routes/
 │   └─ controllers/
 ├─ ws/

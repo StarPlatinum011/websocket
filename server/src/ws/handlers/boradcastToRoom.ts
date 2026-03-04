@@ -15,8 +15,8 @@ export const broadcastToRoom = (
     const room = roomsMap.get(roomId)
     if(!room) throw new Error("User is not allowed in the room.");
 
+    console.log("Backend  message", message);
     const data = JSON.stringify(message);
-    console.log("Backend message", data);
     
 
     for (const ws of room) {
