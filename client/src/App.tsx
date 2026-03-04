@@ -20,6 +20,7 @@ function App() {
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
     
 
+console.log("TOKEN: ", token);
 
   
   //Check authentication with backend: 

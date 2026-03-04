@@ -55,7 +55,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
   //get the messages for this room
   const roomMessages = roomId? messages[roomId] || [] : [];
 
-  console.log("This is room message: ", roomMessages);
   
 
   if (!roomId) {
@@ -86,6 +85,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ onBack }) => {
     //update UI asap
     addMessage(roomId, newMessage);
     updateRoomLastMessage( roomId, content);
+
+    console.log("USER ID: ", roomId)
 
     //send data to WebSocket
     wsSend({

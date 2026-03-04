@@ -18,6 +18,10 @@ export const useWebSocket = (url: string, token: string) => {
 
     if(!token) {
       console.log("No token, skipping WebSocket connection");
+      if(wsRef.current) { //if no token close the socket
+        wsRef.current.close();
+        wsRef.current = null;
+      }
       return;
     }
 
@@ -58,9 +62,11 @@ export const useWebSocket = (url: string, token: string) => {
     }
 
     return () => {
-      if(shouldCloseRef.current) {
+      if(wsRef.current) {
         console.log("Closing websocket connection...");
         socket.close();
+        wsRef.current.close()
+        wsRef.current = null;
       }
       
     };

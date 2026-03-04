@@ -124,7 +124,6 @@ export const useChatStore = create<ChatState>((set) => ({
     if(!token) throw new Error("No auth token available")
 
     const messages = await fetchRoomMessages(token, roomId);
-      console.log("Messages: ", messages);
 
     set((state) => ({
       messages: {
