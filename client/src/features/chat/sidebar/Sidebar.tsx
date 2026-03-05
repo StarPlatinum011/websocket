@@ -51,11 +51,11 @@ export const Sidebar = () => {
   
   // console.log("ConnectionStatus: ", wsStatus);
   return (
-    <div className="lg:w-80 bg-white lg:border-r w-full border-gray-200 flex flex-col">
+    <div className="lg:w-80 bg-[#f7f6f6] lg:border-r w-full border-gray-200 flex flex-col">
       <div className="p-4 border-b border-gray-200">
         <div className="flex justify-between items-center mb-3">
           <h1 className="text-2xl font-bold text-gray-800 ">Enigma</h1>
-                  <p>{username}</p>
+          <p className="text-lg font-semibold">{username}</p>
 
         </div>
         <div className="flex justify-between">
@@ -66,12 +66,12 @@ export const Sidebar = () => {
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-muted rounded-full focus:outline-none focus:ring-1 focus:ring-accent-blue"
             />
             
           </div>
           <button
-            className="bg-[#00A7E1] rounded-[50%] p-1 cursor-pointer"
+            className="bg-accent-blue rounded-[50%] p-1 cursor-pointer"
             onClick={()=> setJoinRoomModalOpen(true)}
             title="Join Room"
           >

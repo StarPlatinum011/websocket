@@ -29,7 +29,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
       <div className="flex items-end gap-2">
         <button
           type="button"
-          className="p-2 text-gray-600 hover:bg-gray-100 rounded-full mb-1"
+          className="p-2 text-gray-600 hover:bg-gray-100 rounded-full mb-1 cursor-pointer"
         >
           <Paperclip className="h-5 w-5" />
         </button>
@@ -39,7 +39,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
         >
           {/* <Image className="h-5 w-5" /> */}
         </button>
-        <div className="flex-1 bg-gray-100 rounded-3xl px-4 py-2">
+        <div className="flex-1 bg-muted rounded-3xl px-4 py-2">
           <input
             type="text"
             value={input}
@@ -53,13 +53,13 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
           type="button"
           className="p-2 text-gray-600 hover:bg-gray-100 rounded-full mb-1"
         >
-          <Smile className="h-5 w-5" />
+          <Smile className="h-5 w-5 cursor-pointer" />
         </button>
         <button
           type="button"
           onClick={handleSubmit}
           disabled={!input.trim()}
-          className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed mb-1"
+          className="p-2 bg-dark-accent text-white rounded-full hover:bg-charcoal-blue disabled:opacity-50 disabled:cursor-not-allowed mb-1"
         >
           <Send className="h-5 w-5" />
         </button>

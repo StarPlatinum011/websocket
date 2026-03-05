@@ -15,7 +15,7 @@ export const MessagesList:React.FC<MessagesListProps> = ({ messages }) => {
   }, [messages]);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+    <div className="flex-1 overflow-y-auto p-4 bg-bg-whitewhite">
       {messages.map(msg => (
         <MessageBubble key={msg.id} message={msg} />
       ))}

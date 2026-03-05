@@ -15,8 +15,8 @@ export const RoomListItem: React.FC<RoomListItemProps> = ({ room, isSelected, on
     }`}
   >
     <div className="flex items-start">
-      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold mr-3">
-        {room.name[0]}
+      <div className="w-12 h-12 flex rounded-full bg-[#DAA49A] items-center align-middle justify-center text-white font-semibold mr-3">
+        {room.name[0].toUpperCase()}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-baseline mb-1">

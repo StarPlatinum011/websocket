@@ -7,7 +7,7 @@ import { useAuthStore } from "../store/useAuthStore";
 export const useWebSocket = (url: string, token: string) => {
 
   const wsRef = useRef<WebSocket | null>(null);
-  const shouldCloseRef = useRef(false);
+  // const shouldCloseRef = useRef(false);
 
   const logout = useAuthStore((state)=> state.logout );
   const setWsStatus = useChatStore((state) => state.setWsStatus);

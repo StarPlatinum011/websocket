@@ -8,7 +8,7 @@ interface ChatHeaderProps {
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({ room, onBack }) => (
-  <div className="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+  <div className="bg-[#f7f6f6] border-b border-gray-200 p-4 flex items-center justify-between">
     <div className="flex items-center">
       <button 
         className="lg:hidden mr-3 text-gray-600 hover:text-gray-900"
@@ -16,8 +16,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ room, onBack }) => (
       >
         <ArrowLeft className="h-6 w-6" />
       </button>
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold mr-3">
-        {room.name[0]}
+      <div className="w-10 h-10 rounded-full bg-[#A9BCD0] flex items-center justify-center text-white font-semibold mr-3">
+        {room.name[0].toUpperCase()}
       </div>
       <div>
         <h2 className="font-semibold text-gray-900">{room.name}</h2>

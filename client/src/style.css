@@ -45,7 +45,28 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme {
+   /* custom colors */
+  --color-bg-white: #f7f6f6;
+  --color-accent-blue: #58A4B0;
+  --color-brand-grey: #D8DBE2;
+  --color-peach: #DAA49A;
+  --color-powder-blue: #A9BCD0;
+  --color-charcoal-blue: #373F51;
+  --color-muted: #ededed;
+  --color-dark-accent: #40689B;
+
+  /* --accent-blue: #25C1E3;
+  --brand-blue: #2A86EA;
+  --dark-accent: #40689B;
+  --dark-blue: #1B2C44; */
+}
+
 :root {
+ 
+
+
+
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
