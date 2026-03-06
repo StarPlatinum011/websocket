@@ -18,7 +18,7 @@ export const EmptyState: React.FC = () => {
           </p>
           <button
             onClick={() => setJoinRoomModalOpen(true)}
-            className="inline-flex items-center px-4 py-2 bg-[#00A7E1] text-white rounded-lg hover:bg-[#0090C4] transition-colors"
+            className="inline-flex items-center px-4 cursor-pointer py-2 bg-accent-blue text-white rounded-lg hover:bg-accent-secondary transition-colors"
           >
             <Plus className="h-5 w-5 mr-2" />
             Join Room

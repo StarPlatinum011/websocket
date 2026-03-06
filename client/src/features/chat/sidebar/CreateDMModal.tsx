@@ -197,7 +197,7 @@ export const CreateDMModal = () => {
                       <button
                         onClick={() => handleStartDM(room)}
                         disabled={joining === room.id}
-                        className="ml-4 px-2 py-1.5 bg-[#00A7E1] text-white rounded-lg hover:bg-[#0090C4] disabled:opacity-50 transition-colors"
+                        className="ml-4 px-2 py-1.5 cursor-pointer bg-accent-blue text-white rounded-lg hover:bg-accent-secondary disabled:opacity-50 transition-colors"
                       >
                         {joining === room.id ? 'Adding...' : 'Add'}
                       </button>
